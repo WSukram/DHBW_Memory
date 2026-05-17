@@ -1,0 +1,15 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="50" r="50" fill="#1D2671"/>
+  <!-- Fetch.ai: connected nodes / network -->
+  <circle cx="50" cy="30" r="7" fill="white"/>
+  <circle cx="28" cy="62" r="7" fill="white"/>
+  <circle cx="72" cy="62" r="7" fill="white"/>
+  <!-- connecting lines -->
+  <line x1="50" y1="30" x2="28" y2="62" stroke="white" stroke-width="4"/>
+  <line x1="50" y1="30" x2="72" y2="62" stroke="white" stroke-width="4"/>
+  <line x1="28" y1="62" x2="72" y2="62" stroke="white" stroke-width="4"/>
+  <!-- mid-edge nodes -->
+  <circle cx="39" cy="46" r="4" fill="#4FC3F7"/>
+  <circle cx="61" cy="46" r="4" fill="#4FC3F7"/>
+  <circle cx="50" cy="62" r="4" fill="#4FC3F7"/>
+</svg>

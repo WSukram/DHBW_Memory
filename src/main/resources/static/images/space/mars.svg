@@ -1,0 +1,35 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#1a2847"/>
+      <stop offset="100%" stop-color="#050912"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" rx="10" fill="url(#bg)"/>
+  <!-- faint stars -->
+  <circle cx="14" cy="16" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="86" cy="22" r="0.6" fill="white" opacity="0.5"/>
+  <circle cx="10" cy="78" r="0.7" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="88" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="78" cy="12" r="0.5" fill="white" opacity="0.4"/>
+  <circle cx="22" cy="90" r="0.5" fill="white" opacity="0.4"/>
+  <defs>
+    <radialGradient id="mp" cx="35%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#FF7043"/>
+      <stop offset="50%" stop-color="#D84315"/>
+      <stop offset="100%" stop-color="#5D1A0A"/>
+    </radialGradient>
+  </defs>
+  <!-- atmospheric glow -->
+  <circle cx="50" cy="50" r="36" fill="#D84315" opacity="0.2"/>
+  <!-- planet -->
+  <circle cx="50" cy="50" r="32" fill="url(#mp)"/>
+  <!-- surface features -->
+  <ellipse cx="40" cy="42" rx="10" ry="5" fill="#8B2E0F" opacity="0.6" transform="rotate(-20,40,42)"/>
+  <ellipse cx="60" cy="56" rx="7" ry="4" fill="#8B2E0F" opacity="0.5" transform="rotate(15,60,56)"/>
+  <ellipse cx="45" cy="60" rx="5" ry="3" fill="#A8390F" opacity="0.5"/>
+  <!-- north polar cap -->
+  <ellipse cx="50" cy="24" rx="8" ry="4" fill="white" opacity="0.85"/>
+  <!-- south polar cap -->
+  <ellipse cx="50" cy="76" rx="6" ry="3" fill="white" opacity="0.7"/>
+</svg>

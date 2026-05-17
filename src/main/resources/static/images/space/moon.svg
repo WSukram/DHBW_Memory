@@ -1,0 +1,36 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#1a2847"/>
+      <stop offset="100%" stop-color="#050912"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" rx="10" fill="url(#bg)"/>
+  <!-- faint stars -->
+  <circle cx="14" cy="16" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="86" cy="22" r="0.6" fill="white" opacity="0.5"/>
+  <circle cx="10" cy="78" r="0.7" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="88" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="78" cy="12" r="0.5" fill="white" opacity="0.4"/>
+  <circle cx="22" cy="90" r="0.5" fill="white" opacity="0.4"/>
+  <defs>
+    <radialGradient id="mg" cx="35%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#FFF9C4"/>
+      <stop offset="60%" stop-color="#FFE082"/>
+      <stop offset="100%" stop-color="#BCAA60"/>
+    </radialGradient>
+  </defs>
+  <!-- crescent: large yellow circle minus offset dark circle -->
+  <mask id="cm">
+    <rect width="100" height="100" fill="white"/>
+    <circle cx="65" cy="42" r="32" fill="black"/>
+  </mask>
+  <circle cx="50" cy="50" r="36" fill="url(#mg)" mask="url(#cm)"/>
+  <!-- craters on the visible side -->
+  <ellipse cx="32" cy="58" rx="6" ry="5" fill="#9c8540" opacity="0.4"/>
+  <ellipse cx="32" cy="58" rx="3.5" ry="3" fill="#7a6630" opacity="0.5"/>
+  <ellipse cx="24" cy="46" rx="4" ry="3" fill="#9c8540" opacity="0.4"/>
+  <ellipse cx="38" cy="40" rx="3" ry="2" fill="#9c8540" opacity="0.3"/>
+  <ellipse cx="26" cy="66" rx="2.5" ry="2" fill="#9c8540" opacity="0.3"/>
+  <ellipse cx="35" cy="72" rx="3" ry="2" fill="#9c8540" opacity="0.3"/>
+</svg>

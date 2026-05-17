@@ -40,6 +40,12 @@ public class StartView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
+        // Match the WalletPulse site: deep navy background + Inter font.
+        getStyle()
+                .set("background", "#0b1326")
+                .set("font-family", "'Inter', sans-serif")
+                .set("color", "#dae2fd");
+
         // --- Player count ---
         // RadioButtonGroup<Integer> means each option is an Integer value.
         // Vaadin renders it as a set of radio buttons; we pick 1 or 2 players.
@@ -99,15 +105,21 @@ public class StartView extends VerticalLayout {
         });
         startBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
 
-        add(
-            new H1("DHBW Memory"),
-            new H3("Game Setup"),
-            playerCount,
-            name1,
-            name2,
-            gridSize,
-            theme,
-            startBtn
-        );
+        H1 title = new H1("DHBW Memory");
+        // WalletPulse brand gradient (purple → cyan) clipped to the text.
+        // Both vendor-prefixed and standard background-clip are set for browser support.
+        title.getStyle()
+                .set("background", "linear-gradient(90deg, #863bff, #47bfff)")
+                .set("-webkit-background-clip", "text")
+                .set("background-clip", "text")
+                .set("color", "transparent")
+                .set("font-weight", "800")
+                .set("letter-spacing", "-0.02em")
+                .set("margin-bottom", "0");
+
+        H3 subtitle = new H3("Game Setup");
+        subtitle.getStyle().set("color", "#c7c4d8").set("font-weight", "500");
+
+        add(title, subtitle, playerCount, name1, name2, gridSize, theme, startBtn);
     }
 }

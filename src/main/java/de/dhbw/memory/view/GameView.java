@@ -1,12 +1,13 @@
 package de.dhbw.memory.view;
 
-import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -15,23 +16,24 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import de.dhbw.memory.model.Theme;
 import de.dhbw.memory.controller.GameService;
 import de.dhbw.memory.model.Card;
 import de.dhbw.memory.model.FlipResult;
 import de.dhbw.memory.model.Game;
 import de.dhbw.memory.model.Player;
+import de.dhbw.memory.model.Theme;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
- * The main game screen: shows the card grid, status bar, and an end-of-game overlay.
- *
- * <p>{@link BeforeEnterObserver} gives us a hook that runs before Vaadin renders
- * the view. We use it to redirect to the start screen if no game has been started
- * yet (e.g. when the user navigates directly to {@code /game} via the URL bar).</p>
+ * The main game screen: card grid, status bar, and end-of-game overlay.
  *
  * @author Markus Wenninger
  */
@@ -41,26 +43,24 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
 
     private final GameService gameService;
 
-    /**
-     * Positions of the two cards that were just flipped face-up but did NOT match.
-     * The view paints these with a red ring (instead of the normal purple face-up
-     * ring) for the ~1.5s the flip-back timer is running, giving the player a
-     * clear "no match" signal. Cleared as soon as the cards flip back down.
-     */
     private final Set<Integer> mismatchedPositions = new HashSet<>();
+    private final Set<Integer> recentlyMatchedPositions = new HashSet<>();
+    private final ScheduledExecutorService matchClearScheduler = Executors.newSingleThreadScheduledExecutor();
+    private final Map<Integer, Div> cardWrappers = new HashMap<>();
+    private final Map<Integer, Div> cardInners = new HashMap<>();
 
-    /**
-     * The card grid is a plain {@link Div} styled as a CSS Grid. We switched
-     * away from FlexLayout because Flexbox + {@code aspect-ratio} children
-     * has fragile sizing behaviour (the cards' computed height kept collapsing
-     * to zero on wrap). CSS Grid is the right primitive here: we tell it
-     * "N equal columns" via {@code grid-template-columns: repeat(N, 1fr)}
-     * and each card just sets its aspect ratio.
-     */
     private final Div cardGrid = new Div();
 
-    /** Single line of text above the grid showing scores and whose turn it is. */
-    private final Span statusBar = new Span();
+    // Status bar is split: statusContent is cleared on each refresh,
+    // timerSpan and helpBtn are stable children that survive removeAll().
+    private final Div statusBar = new Div();
+    private final Div statusContent = new Div();
+    private final Span timerSpan = new Span("0:00");
+
+    private boolean animateEntrance = false;
+
+    /** Grid position currently highlighted by keyboard navigation. */
+    private int keyboardFocus = 0;
 
     public GameView(GameService gameService) {
         this.gameService = gameService;
@@ -69,25 +69,50 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         setAlignItems(Alignment.CENTER);
         setPadding(true);
 
-        // Page background + font matches the WalletPulse site (dark navy + Inter).
+        UI.getCurrent().getPage().addStyleSheet("/styles.css");
+
         getStyle()
                 .set("background", "#0b1326")
                 .set("font-family", "'Inter', sans-serif")
                 .set("color", "#dae2fd");
 
-        // Max width keeps the grid from stretching across huge monitors.
         cardGrid.setMaxWidth("600px");
         cardGrid.setWidth("100%");
         cardGrid.getStyle()
                 .set("display", "grid")
                 .set("gap", "10px")
-                // grid-template-columns is set per game in refreshBoard() once we
-                // know the grid size (4 or 6).
                 .set("box-sizing", "border-box");
 
-        // Status bar styled as a "glass panel" to match the WP design language.
+        // statusContent holds the per-refresh player info; cleared on each refresh.
+        statusContent.getStyle()
+                .set("display", "flex")
+                .set("align-items", "center")
+                .set("gap", "12px")
+                .set("flex", "1");
+
+        // timerSpan never leaves the DOM so the JS setInterval can update it freely.
+        timerSpan.setId("game-timer");
+        timerSpan.getStyle()
+                .set("color", "#a0b0d0")
+                .set("font-size", "0.85rem")
+                .set("font-variant-numeric", "tabular-nums")
+                .set("margin-left", "8px");
+
+        Button helpBtn = new Button("?", e -> showHelpDialog());
+        helpBtn.getStyle()
+                .set("min-width", "28px").set("width", "28px").set("height", "28px")
+                .set("padding", "0").set("border-radius", "50%")
+                .set("font-size", "0.85rem").set("font-weight", "700")
+                .set("cursor", "pointer");
+        helpBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
         statusBar.getStyle()
-                .set("font-size", "0.95rem")
+                .set("display", "flex")
+                .set("align-items", "center")
+                .set("gap", "8px")
+                .set("width", "100%")
+                .set("max-width", "600px")
+                .set("font-size", "0.9rem")
                 .set("font-weight", "500")
                 .set("padding", "10px 18px")
                 .set("background", "rgba(23, 31, 51, 0.75)")
@@ -95,52 +120,38 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
                 .set("border-radius", "8px")
                 .set("color", "#dae2fd")
                 .set("margin-bottom", "16px")
-                .set("backdrop-filter", "blur(8px)");
+                .set("backdrop-filter", "blur(8px)")
+                .set("box-sizing", "border-box");
 
+        statusBar.add(statusContent, timerSpan, helpBtn);
         add(statusBar, cardGrid);
+
+        addDetachListener(e -> matchClearScheduler.shutdownNow());
     }
 
-    /**
-     * Called by Vaadin before the view is rendered.
-     * Redirects to the start screen if no game is active.
-     */
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (gameService.getGame() == null) {
-            // forwardTo silently swaps the target view — the URL stays as /game
-            // which is fine; the user ends up at the start screen either way.
             event.forwardTo(StartView.class);
             return;
         }
+        cardWrappers.clear();
+        cardInners.clear();
+        recentlyMatchedPositions.clear();
+        mismatchedPositions.clear();
+        keyboardFocus = 0;
+        animateEntrance = true;
         refreshBoard();
     }
 
-    /**
-     * Rebuilds the card grid and status bar from the current game state.
-     *
-     * <p>This method is called both from the UI thread (on click) and from the
-     * background thread via {@code UI.access()} after the flip-back delay.
-     * Because Vaadin's {@code UI.access()} already acquires the session lock,
-     * DOM updates inside this method are always safe.</p>
-     */
     private void refreshBoard() {
         Game game = gameService.getGame();
         List<Card> cards = game.getBoard().getCards();
-        int size = game.getBoard().getSize();
 
-        cardGrid.removeAll();
-        // Reset the column template each refresh — needed because the user can
-        // start a new game with a different grid size from the end-game dialog.
-        cardGrid.getStyle().set("grid-template-columns", "repeat(" + size + ", 1fr)");
-
-        for (int i = 0; i < cards.size(); i++) {
-            Card card = cards.get(i);
-            // Capture i in a local variable because lambdas can only close over
-            // effectively-final variables — the loop variable i changes each iteration.
-            int position = i;
-
-            Component cardEl = createCardElement(card, position, size, game);
-            cardGrid.add(cardEl);
+        if (cardWrappers.isEmpty()) {
+            buildBoard(cards, game.getBoard().getSize());
+        } else {
+            updateBoard(cards);
         }
 
         refreshStatus(game);
@@ -151,156 +162,256 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     /**
-     * Creates one card element representing the card's current state.
-     *
-     * <p>The card is a {@link Div} (not a {@link Button}) because we need absolute
-     * positioning for three layered pieces of content: WalletPulse logo in the
-     * top-right corner, motif image centered, and motif name at the bottom.
-     * {@code Div} supports click events via the {@code ClickNotifier} interface.</p>
-     *
-     * <ul>
-     *   <li>Matched: face-up layout, green border tint, no click handler.</li>
-     *   <li>Face-up (flipped, not yet resolved): face-up layout, blue border, no click.</li>
-     *   <li>Face-down: shared card-back image fills the card, clickable
-     *       (unless the flip-back timer is running).</li>
-     * </ul>
+     * Creates all card DOM elements once and injects the JS timer + keyboard listener.
+     * After this call, only updateBoard() is used to reflect state changes.
      */
-    private Component createCardElement(Card card, int position, int size, Game game) {
-        // No explicit width: the parent CSS grid (`repeat(N, 1fr)`) gives each card
-        // an equal share of the available width. We only set the aspect ratio so
-        // the height derives from that width — cards scale fluidly with the viewport
-        // and always look like proper playing cards (4:5, slightly taller than wide).
-        Div cardEl = new Div();
-        cardEl.getStyle()
-                .set("aspect-ratio", "1 / 1")
-                .set("position", "relative")
-                .set("background", "white")
-                .set("border", "1px solid rgba(255,255,255,0.08)")
-                .set("border-radius", "10px")
-                .set("box-shadow", "0 4px 12px rgba(0,0,0,0.35)")
-                .set("overflow", "hidden")
-                .set("user-select", "none")
-                .set("transition", "box-shadow 0.2s, transform 0.15s");
+    private void buildBoard(List<Card> cards, int size) {
+        cardGrid.removeAll();
+        cardGrid.getStyle().set("grid-template-columns", "repeat(" + size + ", 1fr)");
 
-        if (card.isMatched()) {
-            // Matched (= a successful pair): bright green ring + soft outer glow.
-            // We use stacked box-shadows instead of changing the border width so
-            // the card's box dimensions don't shift when state changes.
-            //   • 0 0 0 4px green      → solid ring hugging the card
-            //   • 0 0 0 8px green/30%  → softer outer ring
-            //   • 0 0 28px green/55%   → blurred glow
-            cardEl.getStyle().set("box-shadow",
-                    "0 0 0 4px #4edea3,"
-                  + " 0 0 0 8px rgba(78,222,163,0.30),"
-                  + " 0 0 28px rgba(78,222,163,0.55),"
-                  + " 0 4px 12px rgba(0,0,0,0.35)");
-            addFaceUpContent(cardEl, card.getMotif());
+        boolean animate = animateEntrance;
+        animateEntrance = false;
 
-        } else if (card.isFaceUp()) {
-            if (mismatchedPositions.contains(position)) {
-                // Mismatch (just-flipped pair that didn't match): red ring + glow.
-                // Uses WP's error colour (#ffb4ab). The transition: box-shadow on
-                // the base card animates the fade from purple → red automatically.
-                cardEl.getStyle().set("box-shadow",
-                        "0 0 0 4px #ffb4ab,"
-                      + " 0 0 0 8px rgba(255,180,171,0.30),"
-                      + " 0 0 26px rgba(255,107,93,0.55),"
-                      + " 0 4px 12px rgba(0,0,0,0.35)");
-            } else {
-                // Face-up but not yet resolved: thinner brand-purple ring.
-                cardEl.getStyle().set("box-shadow",
-                        "0 0 0 3px #c3c0ff,"
-                      + " 0 0 18px rgba(195,192,255,0.40),"
-                      + " 0 4px 12px rgba(0,0,0,0.35)");
+        for (int i = 0; i < cards.size(); i++) {
+            int position = i;
+            String motif = cards.get(i).getMotif();
+
+            Div wrapper = new Div();
+            wrapper.addClassName("card-wrapper");
+            if (animate) {
+                wrapper.addClassName("card-enter");
+                wrapper.getStyle().set("--delay", (position * 30) + "ms");
             }
-            addFaceUpContent(cardEl, card.getMotif());
 
-        } else {
-            // Face-down: card-back image fills the entire card.
-            Image back = new Image("/images/back.svg", "card back");
-            back.getStyle()
-                    .set("position", "absolute")
-                    .set("top", "0").set("left", "0")
-                    .set("width", "100%").set("height", "100%")
-                    .set("object-fit", "cover");
-            cardEl.add(back);
+            Div inner = new Div();
+            inner.addClassName("card-inner");
 
-            if (gameService.isWaitingForFlipBack()) {
-                cardEl.getStyle().set("opacity", "0.7").set("cursor", "default");
-            } else {
-                cardEl.getStyle().set("cursor", "pointer");
-                cardEl.addClickListener(e -> {
-                    // Pass UI.getCurrent() so GameService can push the flip-back
-                    // update to this specific browser tab via UI.access(). The
-                    // callback also clears the "red mismatch ring" state since
-                    // the cards are flipping back to face-down at that point.
-                    FlipResult result = gameService.flip(position, UI.getCurrent(), () -> {
-                        mismatchedPositions.clear();
-                        refreshBoard();
-                    });
+            Div backFace = new Div();
+            backFace.addClassName("card-face");
+            backFace.addClassName("card-back");
+            Image backImg = new Image("/images/back.svg", "card back");
+            backImg.getStyle().set("width", "100%").set("height", "100%").set("object-fit", "cover");
+            backFace.add(backImg);
 
-                    if (result == FlipResult.NO_MATCH) {
-                        // Tag both currently face-up cards as "mismatched" so the
-                        // next refreshBoard() paints them red. The model has just
-                        // flipped the second card face-up, so exactly two cards
-                        // satisfy isFaceUp() here.
-                        List<Card> all = gameService.getGame().getBoard().getCards();
-                        for (int i = 0; i < all.size(); i++) {
-                            if (all.get(i).isFaceUp()) {
-                                mismatchedPositions.add(i);
-                            }
-                        }
-                        refreshBoard();
-                    } else if (result != FlipResult.INVALID) {
-                        // FIRST_FLIP or MATCH: just re-render normally.
-                        // INVALID means we clicked too fast (card already up, or timer running).
-                        refreshBoard();
-                    }
-                });
-            }
+            Div frontFace = new Div();
+            frontFace.addClassName("card-face");
+            frontFace.addClassName("card-front");
+            addFaceUpContent(frontFace, motif);
+
+            inner.add(backFace, frontFace);
+            wrapper.add(inner);
+            wrapper.addClickListener(e -> handleCardClick(position));
+
+            cardGrid.add(wrapper);
+            cardWrappers.put(position, wrapper);
+            cardInners.put(position, inner);
         }
 
-        return cardEl;
+        updateBoard(cards);
+        startClientTimer();
+        injectKeyboardListener(size);
     }
 
     /**
-     * Fills a face-up card with the three layered pieces: WalletPulse branding
-     * in the top-right, the motif image centered, and the motif name at the bottom.
-     *
-     * <p>All children are absolutely positioned so they overlap on top of the
-     * card's white background — this mirrors the layout of the NiceHash Memory
-     * Game cards we are modelling.</p>
+     * Updates CSS classes and styles on existing card elements without touching the DOM structure.
+     * Adding/removing "flipped" on card-inner triggers the CSS rotateY transition.
      */
-    private void addFaceUpContent(Div cardEl, String motif) {
+    private void updateBoard(List<Card> cards) {
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = cards.get(i);
+            Div wrapper = cardWrappers.get(i);
+            Div inner = cardInners.get(i);
+
+            if (card.isFaceUp() || card.isMatched()) {
+                inner.addClassName("flipped");
+            } else {
+                inner.removeClassName("flipped");
+            }
+
+            if (card.isMatched()) {
+                wrapper.removeClassName("card-face-down");
+                wrapper.removeClassName("keyboard-focused");
+                String matchShadow = recentlyMatchedPositions.contains(i)
+                        ? "0 0 0 4px #4edea3,"
+                          + " 0 0 0 8px rgba(78,222,163,0.30),"
+                          + " 0 0 28px rgba(78,222,163,0.55),"
+                          + " 0 4px 12px rgba(0,0,0,0.35)"
+                        : "0 4px 12px rgba(0,0,0,0.35)";
+                wrapper.getStyle()
+                        .set("box-shadow", matchShadow)
+                        .set("cursor", "default")
+                        .set("opacity", "1");
+
+            } else if (card.isFaceUp()) {
+                wrapper.removeClassName("card-face-down");
+                String shadow = mismatchedPositions.contains(i)
+                        ? "0 0 0 4px #ffb4ab,"
+                          + " 0 0 0 8px rgba(255,180,171,0.30),"
+                          + " 0 0 26px rgba(255,107,93,0.55),"
+                          + " 0 4px 12px rgba(0,0,0,0.35)"
+                        : "0 0 0 3px #c3c0ff,"
+                          + " 0 0 18px rgba(195,192,255,0.40),"
+                          + " 0 4px 12px rgba(0,0,0,0.35)";
+                wrapper.getStyle()
+                        .set("box-shadow", shadow)
+                        .set("cursor", "default")
+                        .set("opacity", "1");
+
+            } else if (gameService.isWaitingForFlipBack()) {
+                wrapper.removeClassName("card-face-down");
+                wrapper.getStyle()
+                        .set("box-shadow", "0 4px 12px rgba(0,0,0,0.35)")
+                        .set("cursor", "default")
+                        .set("opacity", "0.7");
+
+            } else {
+                wrapper.addClassName("card-face-down");
+                wrapper.getStyle()
+                        .set("box-shadow", "0 4px 12px rgba(0,0,0,0.35)")
+                        .set("cursor", "pointer")
+                        .set("opacity", "1");
+            }
+
+            // Keyboard focus ring — only on face-down cards.
+            if (i == keyboardFocus && !card.isMatched()) {
+                wrapper.addClassName("keyboard-focused");
+            } else {
+                wrapper.removeClassName("keyboard-focused");
+            }
+        }
+    }
+
+    private void handleCardClick(int position) {
+        UI ui = UI.getCurrent();
+
+        // Snapshot which positions are already matched before the flip so we can
+        // diff afterward and find only the two cards that just matched.
+        List<Card> before = gameService.getGame().getBoard().getCards();
+        Set<Integer> matchedBefore = new HashSet<>();
+        for (int i = 0; i < before.size(); i++) {
+            if (before.get(i).isMatched()) matchedBefore.add(i);
+        }
+
+        FlipResult result = gameService.flip(position, ui, () -> {
+            mismatchedPositions.clear();
+            refreshBoard();
+        });
+
+        if (result == FlipResult.NO_MATCH) {
+            List<Card> all = gameService.getGame().getBoard().getCards();
+            for (int i = 0; i < all.size(); i++) {
+                if (all.get(i).isFaceUp()) mismatchedPositions.add(i);
+            }
+            refreshBoard();
+        } else if (result == FlipResult.MATCH) {
+            List<Card> after = gameService.getGame().getBoard().getCards();
+            Set<Integer> newlyMatched = new HashSet<>();
+            for (int i = 0; i < after.size(); i++) {
+                if (after.get(i).isMatched() && !matchedBefore.contains(i)) {
+                    newlyMatched.add(i);
+                }
+            }
+            recentlyMatchedPositions.addAll(newlyMatched);
+            refreshBoard();
+
+            matchClearScheduler.schedule(() -> ui.access(() -> {
+                recentlyMatchedPositions.removeAll(newlyMatched);
+                updateBoard(gameService.getGame().getBoard().getCards());
+            }), 1500, TimeUnit.MILLISECONDS);
+        } else if (result != FlipResult.INVALID) {
+            refreshBoard();
+        }
+    }
+
+    /**
+     * Called from the client when the user presses Space or Enter on the focused card.
+     * Runs on the Vaadin UI thread via the @ClientCallable mechanism.
+     */
+    @ClientCallable
+    public void handleKeyboardFlip(int position) {
+        keyboardFocus = position;
+        handleCardClick(position);
+    }
+
+    /**
+     * Called from the client on arrow key presses. Updates the focus highlight
+     * without triggering a full board refresh.
+     */
+    @ClientCallable
+    public void setKeyboardFocus(int position) {
+        keyboardFocus = position;
+        cardWrappers.forEach((pos, wrapper) -> {
+            Card card = gameService.getGame().getBoard().getCardAt(pos);
+            if (pos == position && !card.isMatched()) {
+                wrapper.addClassName("keyboard-focused");
+            } else {
+                wrapper.removeClassName("keyboard-focused");
+            }
+        });
+    }
+
+    /** Starts the client-side interval that increments the timer span every 500 ms. */
+    private void startClientTimer() {
+        double elapsed = gameService.getElapsedSeconds();
+        getElement().executeJs(
+            "var el = document.getElementById('game-timer');" +
+            "var start = Date.now() - $0 * 1000;" +
+            "if (window._gameTimer) clearInterval(window._gameTimer);" +
+            "window._gameTimer = setInterval(function() {" +
+            "  if (!el) el = document.getElementById('game-timer');" +
+            "  if (!el) return;" +
+            "  var s = Math.floor((Date.now() - start) / 1000);" +
+            "  var m = Math.floor(s / 60); var ss = s % 60;" +
+            "  el.textContent = m + ':' + (ss < 10 ? '0' : '') + ss;" +
+            "}, 500);",
+            elapsed
+        );
+    }
+
+    /**
+     * Injects a keydown listener for arrow-key focus movement and space/enter flip.
+     * Uses this.$server to call back into Java without a full page interaction.
+     */
+    private void injectKeyboardListener(int size) {
+        getElement().executeJs(
+            "var size = $0; var total = size * size; var focus = 0;" +
+            "if (window._keyListener) document.removeEventListener('keydown', window._keyListener);" +
+            "var self = this;" +
+            "window._keyListener = function(e) {" +
+            "  var moved = false;" +
+            "  if (e.key === 'ArrowRight') { focus = (focus + 1) % total; moved = true; }" +
+            "  else if (e.key === 'ArrowLeft') { focus = (focus - 1 + total) % total; moved = true; }" +
+            "  else if (e.key === 'ArrowDown') { focus = Math.min(focus + size, total - 1); moved = true; }" +
+            "  else if (e.key === 'ArrowUp') { focus = Math.max(focus - size, 0); moved = true; }" +
+            "  else if (e.key === ' ' || e.key === 'Enter') {" +
+            "    self.$server.handleKeyboardFlip(focus); e.preventDefault(); return;" +
+            "  }" +
+            "  if (moved) { e.preventDefault(); self.$server.setKeyboardFocus(focus); }" +
+            "};" +
+            "document.addEventListener('keydown', window._keyListener);",
+            size
+        );
+    }
+
+    private void addFaceUpContent(Div face, String motif) {
         Theme theme = gameService.getTheme();
 
-        // ─── Tweak point: top-right WalletPulse icon ────────────────────────
-        // Change WP_ICON_WIDTH to scale the brand mark; top/right control the
-        // distance from the corner.
-        final String WP_ICON_WIDTH = "14%";
         Image wp = new Image("/images/wp-icon.svg", "WalletPulse");
         wp.getStyle()
                 .set("position", "absolute")
                 .set("top", "6%").set("right", "6%")
-                .set("width", WP_ICON_WIDTH).set("height", "auto")
+                .set("width", "14%").set("height", "auto")
                 .set("border-radius", "3px")
                 .set("opacity", "0.9");
 
-        // ─── Tweak point: centered motif image ──────────────────────────────
-        // MOTIF_SIZE controls how big the coin / space object appears.
-        // translate(-50%,-50%) keeps it true-centered both axes.
-        final String MOTIF_SIZE = "52%";
-        Image motifImg = new Image(
-                "/images/" + theme.getFolder() + "/" + motif + ".svg", motif);
+        Image motifImg = new Image("/images/" + theme.getFolder() + "/" + motif + ".svg", motif);
         motifImg.getStyle()
                 .set("position", "absolute")
                 .set("top", "50%").set("left", "50%")
                 .set("transform", "translate(-50%, -50%)")
-                .set("width", MOTIF_SIZE).set("height", MOTIF_SIZE)
+                .set("width", "52%").set("height", "52%")
                 .set("object-fit", "contain");
 
-        // ─── Tweak point: bottom-center display name ────────────────────────
-        // Change font-size clamp() to scale the label up or down across screens.
         Span name = new Span(theme.getDisplayName(motif));
         name.getStyle()
                 .set("position", "absolute")
@@ -316,38 +427,47 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
                 .set("overflow", "hidden")
                 .set("text-overflow", "ellipsis");
 
-        cardEl.add(wp, motifImg, name);
+        face.add(wp, motifImg, name);
     }
 
-    /**
-     * Updates the status bar text to show each player's score, whose turn it is,
-     * and how many turns have been played in total (requirement #FANF11).
-     */
     private void refreshStatus(Game game) {
-        StringBuilder sb = new StringBuilder();
+        statusContent.removeAll();
 
         for (Player player : game.getPlayers()) {
-            // Mark the active player with an arrow so it's obvious whose turn it is.
-            if (player == game.getActivePlayer() && !game.isFinished()) {
-                sb.append("▶ ");
+            boolean isActive = player == game.getActivePlayer() && !game.isFinished();
+
+            if (isActive) {
+                Span arrow = new Span("▶");
+                arrow.getStyle().set("color", "#863bff").set("font-size", "1.1rem").set("line-height", "1");
+                statusContent.add(arrow);
             }
-            sb.append(player.getName())
-              .append(": ")
-              .append(player.getScore())
-              .append(" pairs   ");
+
+            Span playerSpan = new Span(player.getName() + ": " + player.getScore() + " pairs");
+            if (isActive) {
+                playerSpan.addClassName("player-active");
+            } else {
+                playerSpan.getStyle().set("color", "#8090b0");
+            }
+            statusContent.add(playerSpan);
         }
 
-        sb.append("| Turns: ").append(game.getTotalTurns());
-        statusBar.setText(sb.toString());
+        Span moves = new Span("Moves: " + game.getTotalTurns());
+        moves.getStyle()
+                .set("margin-left", "auto")
+                .set("color", "#6070a0")
+                .set("font-size", "0.85rem");
+        statusContent.add(moves);
     }
 
-    /**
-     * Shows a modal dialog when the game is finished (requirement #FANF13).
-     *
-     * <p>A Vaadin {@link Dialog} is a modal overlay — the rest of the UI is
-     * blocked until the dialog is closed. We open it programmatically here.</p>
-     */
     private void showEndDialog(Game game) {
+        // Stop the live timer.
+        UI.getCurrent().getPage().executeJs("if (window._gameTimer) clearInterval(window._gameTimer);");
+
+        long elapsed = gameService.getElapsedSeconds();
+        long minutes = elapsed / 60;
+        long seconds = elapsed % 60;
+        String timeStr = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
         Dialog dialog = new Dialog();
         dialog.setCloseOnOutsideClick(false);
 
@@ -358,20 +478,24 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         if (game.isTie()) {
             headline = "It's a tie!";
         } else if (game.winner() != null) {
-            headline = game.getPlayers().size() == 1
-                    ? "You finished!"
-                    : game.winner().getName() + " wins!";
+            headline = game.getPlayers().size() == 1 ? "You finished!" : game.winner().getName() + " wins!";
         } else {
             headline = "Game over!";
         }
 
         content.add(new H2(headline));
 
-        // Show final scores for all players.
         for (Player player : game.getPlayers()) {
-            content.add(new Paragraph(player.getName() + ": " + player.getScore() + " pairs"));
+            int accuracy = player.getTurns() > 0
+                    ? (player.getScore() * 100 / player.getTurns())
+                    : 0;
+            String label = game.getPlayers().size() == 1
+                    ? player.getScore() + " pairs  ·  " + accuracy + "% accuracy"
+                    : player.getName() + ": " + player.getScore() + " pairs  ·  " + accuracy + "% accuracy";
+            content.add(new Paragraph(label));
         }
-        content.add(new Paragraph("Total turns: " + game.getTotalTurns()));
+
+        content.add(new Paragraph("Time: " + timeStr + "  ·  Moves: " + game.getTotalTurns()));
 
         Button playAgain = new Button("Play Again", e -> {
             dialog.close();
@@ -379,6 +503,30 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         });
         playAgain.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         content.add(playAgain);
+
+        dialog.add(content);
+        dialog.open();
+    }
+
+    private void showHelpDialog() {
+        Dialog dialog = new Dialog();
+
+        VerticalLayout content = new VerticalLayout();
+        content.setAlignItems(Alignment.START);
+        content.setWidth("320px");
+
+        content.add(new H3("How to play"));
+        content.add(new Paragraph("Flip two cards per turn. If they match, you score a point and play again."));
+        content.add(new Paragraph("If they don't match, they flip back and the next player takes their turn."));
+        content.add(new Paragraph("The player with the most pairs at the end wins."));
+
+        Paragraph keys = new Paragraph("Keyboard: Arrow keys to move · Space or Enter to flip");
+        keys.getStyle().set("color", "#8090b0").set("font-size", "0.85rem");
+        content.add(keys);
+
+        Button close = new Button("Got it", e -> dialog.close());
+        close.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        content.add(close);
 
         dialog.add(content);
         dialog.open();

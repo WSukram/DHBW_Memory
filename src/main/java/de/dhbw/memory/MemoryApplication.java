@@ -1,6 +1,7 @@
 package de.dhbw.memory;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -23,6 +24,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Markus Wenninger
  */
 @SpringBootApplication
+@Push
 public class MemoryApplication implements AppShellConfigurator {
 
     public static void main(String[] args) {

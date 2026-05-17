@@ -15,7 +15,7 @@
     <artifactId>DHBW_Memory</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>DHBW Memory</name>
-    <description>Memory-Kartenspiel — DHBW Ravensburg Programmieren Java</description>
+    <description>Memory — DHBW Ravensburg Campus Friedrichshafen Java</description>
 
     <properties>
         <java.version>21</java.version>

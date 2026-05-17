@@ -10,14 +10,19 @@ import java.util.List;
  */
 public enum Theme {
 
+    // First 8 motifs are used for the 4×4 grid; all 18 for 6×6.
     CRYPTO("crypto", List.of(
-            "btc", "eth", "bnb", "sol", "ada", "dot", "matic", "link",
-            "avax", "ltc", "xrp", "doge", "shib", "uni", "atom", "xlm", "algo", "fil"
+            // 4×4 core — most recognisable coins
+            "btc", "eth", "sol", "bnb", "xrp", "ada", "dot", "doge",
+            // 6×6 extras
+            "link", "avax", "matic", "ltc", "trx", "uni", "near", "pepe", "sui", "fet"
     )),
 
     SPACE("space", List.of(
-            "sun", "moon", "mars", "saturn", "jupiter", "earth", "mercury", "venus",
-            "uranus", "neptune", "comet", "meteor", "galaxy", "nebula", "blackhole", "rocket", "astronaut", "satellite"
+            // 4×4 core — iconic mix of objects and exploration, not just planets
+            "rocket", "astronaut", "moon", "saturn", "blackhole", "galaxy", "sun", "mars",
+            // 6×6 extras
+            "earth", "jupiter", "mercury", "venus", "uranus", "neptune", "comet", "nebula", "satellite", "meteor"
     ));
 
     private final String folder;

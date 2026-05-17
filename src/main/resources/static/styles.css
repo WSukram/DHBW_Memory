@@ -1,0 +1,107 @@
+/* ── Card 3D flip structure ─────────────────────────────────────────────── */
+
+.card-wrapper {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    user-select: none;
+    /* Transition covers the hover lift (transform) and ring-colour changes (box-shadow). */
+    transition: transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+/* The inner div is the only element that actually rotates.
+   perspective() is applied here (not on the parent) so it works even when
+   the wrapper itself is being translated by the hover lift. */
+.card-inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: perspective(700px) rotateY(0deg);
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-inner.flipped {
+    transform: perspective(700px) rotateY(180deg);
+}
+
+/* Both faces share the same footprint. backface-visibility: hidden hides each
+   face when it is rotated away from the viewer. */
+.card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* The front face starts at 180° so it is hidden until the inner rotates. */
+.card-face.card-front {
+    transform: rotateY(180deg);
+}
+
+/* ── Hover lift: "someone trying to peek at the card" ───────────────────── */
+/* Only applied to face-down cards that are currently clickable.             */
+.card-face-down:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow:
+        0 0 0 2px rgba(134, 59, 255, 0.6),
+        0 10px 28px rgba(134, 59, 255, 0.30),
+        0 4px 12px rgba(0, 0, 0, 0.40) !important;
+    cursor: pointer;
+}
+
+/* ── Keyboard navigation focus ring ────────────────────────────────────── */
+.keyboard-focused {
+    outline: 2px solid #863bff;
+    outline-offset: 3px;
+}
+
+/* ── Card entrance stagger ──────────────────────────────────────────────── */
+@keyframes cardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.88);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.card-enter {
+    animation: cardEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--delay, 0ms);
+}
+
+/* ── Active player pulse ring ───────────────────────────────────────────── */
+@keyframes pulseRing {
+    0%   { box-shadow: 0 0 0 0   rgba(134, 59, 255, 0.65); }
+    70%  { box-shadow: 0 0 0 8px rgba(134, 59, 255, 0);    }
+    100% { box-shadow: 0 0 0 0   rgba(134, 59, 255, 0);    }
+}
+
+.player-active {
+    display: inline-block;
+    animation: pulseRing 1.6s ease-out infinite;
+    border-radius: 6px;
+    padding: 3px 10px;
+    background: rgba(134, 59, 255, 0.13);
+    border: 1px solid rgba(134, 59, 255, 0.45);
+    color: #dae2fd;
+}
+
+/* ── Gradient "Start Game" button ───────────────────────────────────────── */
+.btn-gradient {
+    background: linear-gradient(90deg, #863bff, #47bfff) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    transition: filter 0.18s, transform 0.15s !important;
+}
+
+.btn-gradient:hover {
+    filter: brightness(1.12);
+    transform: translateY(-2px);
+}

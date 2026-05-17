@@ -1,6 +1,7 @@
 package de.dhbw.memory.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Available card themes. Each theme knows its static-resource folder and the full list of
@@ -35,7 +36,8 @@ public enum Theme {
 
     /**
      * Returns the static-resource sub-folder name for this theme (e.g. {@code "crypto"}).
-     * Images live at {@code /static/themes/<folder>/<motif>.png}.
+     * Images live at {@code src/main/resources/static/images/<folder>/<motif>.svg}
+     * (served at {@code /images/<folder>/<motif>.svg}).
      */
     public String getFolder() {
         return folder;
@@ -56,4 +58,62 @@ public enum Theme {
         int pairs = (gridSize * gridSize) / 2;
         return motifs.subList(0, pairs);
     }
+
+    /**
+     * Returns the human-readable display name for a motif id (e.g. {@code "btc" → "Bitcoin"}).
+     * Used by the view to render a friendly label on each card. If the motif is unknown,
+     * the id is returned as-is so we never crash on a missing entry.
+     *
+     * @param motif the motif id from {@link #getMotifsFor(int)}
+     * @return the display name suitable for showing to the user
+     */
+    public String getDisplayName(String motif) {
+        Map<String, String> table = switch (this) {
+            case CRYPTO -> CRYPTO_DISPLAY_NAMES;
+            case SPACE -> SPACE_DISPLAY_NAMES;
+        };
+        return table.getOrDefault(motif, motif);
+    }
+
+    private static final Map<String, String> CRYPTO_DISPLAY_NAMES = Map.ofEntries(
+            Map.entry("btc",   "Bitcoin"),
+            Map.entry("eth",   "Ethereum"),
+            Map.entry("sol",   "Solana"),
+            Map.entry("bnb",   "BNB"),
+            Map.entry("xrp",   "XRP"),
+            Map.entry("ada",   "Cardano"),
+            Map.entry("dot",   "Polkadot"),
+            Map.entry("doge",  "Dogecoin"),
+            Map.entry("link",  "Chainlink"),
+            Map.entry("avax",  "Avalanche"),
+            Map.entry("matic", "Polygon"),
+            Map.entry("ltc",   "Litecoin"),
+            Map.entry("trx",   "TRON"),
+            Map.entry("uni",   "Uniswap"),
+            Map.entry("near",  "NEAR"),
+            Map.entry("pepe",  "Pepe"),
+            Map.entry("sui",   "Sui"),
+            Map.entry("fet",   "Fetch.ai")
+    );
+
+    private static final Map<String, String> SPACE_DISPLAY_NAMES = Map.ofEntries(
+            Map.entry("rocket",    "Rocket"),
+            Map.entry("astronaut", "Astronaut"),
+            Map.entry("moon",      "Moon"),
+            Map.entry("saturn",    "Saturn"),
+            Map.entry("blackhole", "Black Hole"),
+            Map.entry("galaxy",    "Galaxy"),
+            Map.entry("sun",       "Sun"),
+            Map.entry("mars",      "Mars"),
+            Map.entry("earth",     "Earth"),
+            Map.entry("jupiter",   "Jupiter"),
+            Map.entry("mercury",   "Mercury"),
+            Map.entry("venus",     "Venus"),
+            Map.entry("uranus",    "Uranus"),
+            Map.entry("neptune",   "Neptune"),
+            Map.entry("comet",     "Comet"),
+            Map.entry("nebula",    "Nebula"),
+            Map.entry("satellite", "Satellite"),
+            Map.entry("meteor",    "Meteor")
+    );
 }

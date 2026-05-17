@@ -67,6 +67,7 @@ public class Game {
 
         secondFlipped = card;
         totalTurns++;
+        players.get(activePlayerIdx).addTurn();
 
         if (firstFlipped.getMotif().equals(secondFlipped.getMotif())) {
             resolveMatch();

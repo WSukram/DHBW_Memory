@@ -3,6 +3,7 @@ package de.dhbw.memory.view;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
@@ -11,7 +12,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
@@ -25,9 +26,10 @@ import java.util.List;
 /**
  * Start screen where players configure the game before playing.
  *
- * <p>Mapped to the root URL {@code /} via {@link Route @Route("")}. Extending
- * {@link VerticalLayout} means the view itself is a vertical container —
- * everything we {@code add()} stacks from top to bottom.</p>
+ * <p>Mapped to the root URL {@code /} via {@link Route @Route("")}. Visual
+ * styling lives in {@code styles.css} ({@code .app-body, .glass-surface,
+ * .setup-card, .brand-title, .btn-gradient}); this class is only concerned
+ * with form composition and the start-game wiring.</p>
  *
  * @author Markus Wenninger
  */
@@ -36,112 +38,131 @@ import java.util.List;
 public class StartView extends VerticalLayout {
 
     /**
-     * Spring injects {@link GameService} here automatically because it is a
-     * {@code @Service} bean. Constructor injection (receiving it as a parameter)
-     * is the recommended style — it makes the dependency explicit and testable.
+     * Spring injects {@link GameService} (it is a {@code @Service} bean).
+     * Constructor injection makes the dependency explicit and testable.
      */
     public StartView(GameService gameService) {
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
+        setPadding(true);
+        addClassName("app-body");
 
         UI.getCurrent().getPage().addStyleSheet("/styles.css");
 
-        // Match the WalletPulse site: deep navy background + Inter font.
-        getStyle()
-                .set("background", "#0b1326")
-                .set("font-family", "'Inter', sans-serif")
-                .set("color", "#dae2fd");
+        // --- Header: WP icon + brand title side-by-side ---
+        Image brandIcon = new Image("/images/wp-icon.svg", "WalletPulse");
+        brandIcon.addClassName("brand-icon");
 
-        // --- Player count ---
-        // RadioButtonGroup<Integer> means each option is an Integer value.
-        // Vaadin renders it as a set of radio buttons; we pick 1 or 2 players.
+        H1 title = new H1("DHBW Memory");
+        title.addClassName("brand-title");
+
+        HorizontalLayout header = new HorizontalLayout(brandIcon, title);
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
+        header.setSpacing(true);
+
+        H3 subtitle = new H3("Game Setup");
+        subtitle.addClassName("setup-subtitle");
+
+        // --- Player count (1 or 2) ---
         RadioButtonGroup<Integer> playerCount = new RadioButtonGroup<>();
         playerCount.setLabel("Number of players");
         playerCount.setItems(1, 2);
         playerCount.setValue(1);
 
+        // --- Names side-by-side. name2 is always laid out, just hidden when 1-player.
+        //     visibility:hidden (vs setVisible/display:none) keeps the slot reserved
+        //     so toggling players doesn't shift the form vertically. ---
         TextField name1 = new TextField("Player 1 name");
         name1.setValue("Player 1");
+        name1.getStyle().set("flex", "1");
 
         TextField name2 = new TextField("Player 2 name");
         name2.setValue("Player 2");
-        // Hidden by default — only shown when 2-player mode is selected.
-        name2.setVisible(false);
+        name2.getStyle().set("flex", "1").set("visibility", "hidden");
 
-        // Value-change listener: fires every time the radio selection changes.
-        // e.getValue() returns the newly selected Integer (1 or 2).
-        playerCount.addValueChangeListener(e -> name2.setVisible(e.getValue() == 2));
+        playerCount.addValueChangeListener(e ->
+                name2.getStyle().set("visibility", e.getValue() == 2 ? "visible" : "hidden"));
 
-        // --- Grid size ---
+        HorizontalLayout names = new HorizontalLayout(name1, name2);
+        names.setWidthFull();
+        names.setSpacing(true);
+        names.getStyle().set("flex-wrap", "wrap");
+
+        // --- Grid size (4 or 6) — stacked vertically to mirror the theme picker. ---
         RadioButtonGroup<Integer> gridSize = new RadioButtonGroup<>();
         gridSize.setLabel("Grid size");
         gridSize.setItems(4, 6);
         gridSize.setValue(4);
-        // ItemLabelGenerator controls the display text for each option.
         gridSize.setItemLabelGenerator(s -> s + " × " + s);
+        gridSize.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
 
-        // --- Theme ---
-        // Select<Theme> is a dropdown. Theme.values() returns all enum constants.
-        Select<Theme> theme = new Select<>();
+        // --- Theme as a RadioButtonGroup so the icon stays visible at all times.
+        //     A Select hides the renderer once the popup closes, so an icon-only
+        //     preview vanishes after selection — radio buttons sidestep that. ---
+        RadioButtonGroup<Theme> theme = new RadioButtonGroup<>();
         theme.setLabel("Theme");
         theme.setItems(Theme.values());
         theme.setValue(Theme.CRYPTO);
-        // Show a small preview icon + label for each theme in the dropdown.
+        theme.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
         theme.setRenderer(new ComponentRenderer<>(t -> {
             String motif = t.getMotifsFor(4).get(0);
             Image icon = new Image("/images/" + t.getFolder() + "/" + motif + ".svg", t.name());
-            icon.getStyle().set("width", "22px").set("height", "22px").set("object-fit", "contain");
+            // display:block + fixed square + object-fit:contain keep the SVG dead-centre
+            // regardless of whitespace in its viewBox.
+            icon.getStyle()
+                    .set("width", "24px").set("height", "24px")
+                    .set("object-fit", "contain")
+                    .set("display", "block")
+                    .set("flex-shrink", "0");
 
             String label = t.name().charAt(0) + t.name().substring(1).toLowerCase();
             Span text = new Span(label);
+            text.getStyle().set("line-height", "1");
 
-            HorizontalLayout row = new HorizontalLayout(icon, text);
-            row.setAlignItems(FlexComponent.Alignment.CENTER);
-            row.setSpacing(true);
+            // Plain Div + display:flex bypasses HorizontalLayout's Lumo padding,
+            // which was nudging the icon off-centre relative to the text baseline.
+            Div row = new Div(icon, text);
+            row.getStyle()
+                    .set("display", "inline-flex")
+                    .set("align-items", "center")
+                    .set("gap", "10px")
+                    .set("padding", "0")
+                    .set("margin", "0");
             return row;
         }));
-        // setItemLabelGenerator is still needed so the selected value shows a plain label.
-        theme.setItemLabelGenerator(t -> {
-            String name = t.name();
-            return name.charAt(0) + name.substring(1).toLowerCase();
-        });
 
-        // --- Start button ---
+        // --- Grid size + theme side-by-side, wrapping below the breakpoint ---
+        HorizontalLayout settings = new HorizontalLayout(gridSize, theme);
+        settings.setWidthFull();
+        settings.setSpacing(true);
+        settings.getStyle().set("flex-wrap", "wrap");
+        gridSize.getStyle().set("flex", "1").set("min-width", "140px");
+        theme.getStyle().set("flex", "1").set("min-width", "180px");
+
+        // --- Start button (gradient styling lives in .btn-gradient) ---
         Button startBtn = new Button("Start Game", e -> {
-            List<String> names = new ArrayList<>();
+            List<String> playerNames = new ArrayList<>();
             String p1 = name1.getValue().isBlank() ? "Player 1" : name1.getValue().trim();
-            names.add(p1);
+            playerNames.add(p1);
             if (playerCount.getValue() == 2) {
                 String p2 = name2.getValue().isBlank() ? "Player 2" : name2.getValue().trim();
-                names.add(p2);
+                playerNames.add(p2);
             }
-
-            // Tell the service to create a new Game with the chosen settings.
-            gameService.startGame(names, gridSize.getValue(), theme.getValue());
-
-            // Navigate to the game view — Vaadin replaces the current page content
-            // without a full browser reload (single-page app behaviour).
+            gameService.startGame(playerNames, gridSize.getValue(), theme.getValue());
             UI.getCurrent().navigate(GameView.class);
         });
         startBtn.addThemeVariants(ButtonVariant.LUMO_LARGE);
         startBtn.addClassName("btn-gradient");
 
-        H1 title = new H1("DHBW Memory");
-        // WalletPulse brand gradient (purple → cyan) clipped to the text.
-        // Both vendor-prefixed and standard background-clip are set for browser support.
-        title.getStyle()
-                .set("background", "linear-gradient(90deg, #863bff, #47bfff)")
-                .set("-webkit-background-clip", "text")
-                .set("background-clip", "text")
-                .set("color", "transparent")
-                .set("font-weight", "800")
-                .set("letter-spacing", "-0.02em")
-                .set("margin-bottom", "0");
+        // --- Glass card container groups all controls under the title. ---
+        VerticalLayout card = new VerticalLayout(playerCount, names, settings, startBtn);
+        card.setSpacing(true);
+        card.setMaxWidth("640px");
+        card.setWidthFull();
+        card.setHorizontalComponentAlignment(Alignment.CENTER, playerCount);
+        card.addClassNames("glass-surface", "setup-card");
 
-        H3 subtitle = new H3("Game Setup");
-        subtitle.getStyle().set("color", "#c7c4d8").set("font-weight", "500");
-
-        add(title, subtitle, playerCount, name1, name2, gridSize, theme, startBtn);
+        add(header, subtitle, card);
     }
 }

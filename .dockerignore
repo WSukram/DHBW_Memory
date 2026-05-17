@@ -1,0 +1,30 @@
+# Build output
+target/
+src/main/frontend/generated/
+src/main/bundles/
+
+# Frontend tooling artifacts (regenerated inside the container)
+node_modules/
+vite.generated.ts
+package-lock.json
+tsconfig.json
+types.d.ts
+
+# Local toolchain / IDE / OS noise — never needed at build time
+.git/
+.github/
+.idea/
+.vscode/
+.claude/
+.mvn/wrapper/maven-wrapper.jar
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Repo docs that aren't required to build the app
+README.md
+HELP.md
+CLAUDE.md
+requirements/
+*.log

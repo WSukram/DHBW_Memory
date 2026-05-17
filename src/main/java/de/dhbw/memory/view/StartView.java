@@ -5,10 +5,15 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import de.dhbw.memory.controller.GameService;
@@ -39,6 +44,8 @@ public class StartView extends VerticalLayout {
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
+
+        UI.getCurrent().getPage().addStyleSheet("/styles.css");
 
         // Match the WalletPulse site: deep navy background + Inter font.
         getStyle()
@@ -80,7 +87,21 @@ public class StartView extends VerticalLayout {
         theme.setLabel("Theme");
         theme.setItems(Theme.values());
         theme.setValue(Theme.CRYPTO);
-        // Show "Crypto" / "Space" instead of the raw enum name.
+        // Show a small preview icon + label for each theme in the dropdown.
+        theme.setRenderer(new ComponentRenderer<>(t -> {
+            String motif = t.getMotifsFor(4).get(0);
+            Image icon = new Image("/images/" + t.getFolder() + "/" + motif + ".svg", t.name());
+            icon.getStyle().set("width", "22px").set("height", "22px").set("object-fit", "contain");
+
+            String label = t.name().charAt(0) + t.name().substring(1).toLowerCase();
+            Span text = new Span(label);
+
+            HorizontalLayout row = new HorizontalLayout(icon, text);
+            row.setAlignItems(FlexComponent.Alignment.CENTER);
+            row.setSpacing(true);
+            return row;
+        }));
+        // setItemLabelGenerator is still needed so the selected value shows a plain label.
         theme.setItemLabelGenerator(t -> {
             String name = t.name();
             return name.charAt(0) + name.substring(1).toLowerCase();
@@ -103,7 +124,8 @@ public class StartView extends VerticalLayout {
             // without a full browser reload (single-page app behaviour).
             UI.getCurrent().navigate(GameView.class);
         });
-        startBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
+        startBtn.addThemeVariants(ButtonVariant.LUMO_LARGE);
+        startBtn.addClassName("btn-gradient");
 
         H1 title = new H1("DHBW Memory");
         // WalletPulse brand gradient (purple → cyan) clipped to the text.

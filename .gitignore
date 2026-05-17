@@ -1,0 +1,60 @@
+### Maven / Build output ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.kotlin
+
+### Spring Boot ###
+HELP.md
+*.log
+*.log.*
+application-local.properties
+
+### Vaadin ###
+node_modules/
+src/main/frontend/generated/
+src/main/bundles/
+vite.generated.ts
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+tsconfig.json
+types.d.ts
+
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Claude Code / planning / lecturer docs (local only) ###
+CLAUDE.md
+.claude/
+requirements/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store

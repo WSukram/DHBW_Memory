@@ -85,8 +85,9 @@ src/main/java/de/dhbw/memory/
     └── dialog/                     HelpDialog, QuitConfirmDialog, EndGameDialog
 ```
 
-**UML class diagram:** [`docs/uml/class-diagram.png`](docs/uml/class-diagram.png)
-(source: [`docs/uml/class-diagram.puml`](docs/uml/class-diagram.puml)).
+**UML class diagram:**
+- v2 — color-coded by layer: [`docs/uml/class-diagram-v2.png`](docs/uml/class-diagram-v2.png) (source: [`class-diagram-v2.puml`](docs/uml/class-diagram-v2.puml))
+- v1 — auto-layout reference: [`docs/uml/class-diagram-v1.png`](docs/uml/class-diagram-v1.png) (source: [`class-diagram-v1.puml`](docs/uml/class-diagram-v1.puml))
 
 ---
 

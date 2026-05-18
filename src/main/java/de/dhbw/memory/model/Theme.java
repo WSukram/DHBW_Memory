@@ -19,13 +19,6 @@ public enum Theme {
             "link", "avax", "matic", "ltc", "trx", "uni", "near", "pepe", "sui", "fet"
     )),
 
-    SPACE("space", List.of(
-            // 4×4 core — iconic mix of objects and exploration, not just planets
-            "rocket", "astronaut", "moon", "saturn", "blackhole", "galaxy", "sun", "mars",
-            // 6×6 extras
-            "earth", "jupiter", "mercury", "venus", "uranus", "neptune", "comet", "nebula", "satellite", "meteor"
-    )),
-
     LANGUAGES("languages", List.of(
             // 4×4 core — the eight most ubiquitous languages a student encounters
             "java", "python", "javascript", "c", "html5", "sql", "typescript", "assembly",
@@ -77,7 +70,6 @@ public enum Theme {
     public String getDisplayName(String motif) {
         Map<String, String> table = switch (this) {
             case CRYPTO -> CRYPTO_DISPLAY_NAMES;
-            case SPACE -> SPACE_DISPLAY_NAMES;
             case LANGUAGES -> LANGUAGE_DISPLAY_NAMES;
         };
         return table.getOrDefault(motif, motif);
@@ -104,28 +96,7 @@ public enum Theme {
             Map.entry("fet",   "Fetch.ai")
     );
 
-    private static final Map<String, String> SPACE_DISPLAY_NAMES = Map.ofEntries(
-            Map.entry("rocket",    "Rocket"),
-            Map.entry("astronaut", "Astronaut"),
-            Map.entry("moon",      "Moon"),
-            Map.entry("saturn",    "Saturn"),
-            Map.entry("blackhole", "Black Hole"),
-            Map.entry("galaxy",    "Galaxy"),
-            Map.entry("sun",       "Sun"),
-            Map.entry("mars",      "Mars"),
-            Map.entry("earth",     "Earth"),
-            Map.entry("jupiter",   "Jupiter"),
-            Map.entry("mercury",   "Mercury"),
-            Map.entry("venus",     "Venus"),
-            Map.entry("uranus",    "Uranus"),
-            Map.entry("neptune",   "Neptune"),
-            Map.entry("comet",     "Comet"),
-            Map.entry("nebula",    "Nebula"),
-            Map.entry("satellite", "Satellite"),
-            Map.entry("meteor",    "Meteor")
-    );
-
-    private static final Map<String, String> LANGUAGE_DISPLAY_NAMES = Map.ofEntries(
+private static final Map<String, String> LANGUAGE_DISPLAY_NAMES = Map.ofEntries(
             Map.entry("java",       "Java"),
             Map.entry("python",     "Python"),
             Map.entry("javascript", "JavaScript"),

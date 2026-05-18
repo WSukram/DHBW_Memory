@@ -15,8 +15,8 @@ class ThemeTest {
     }
 
     @Test
-    void spaceFolderIsSpace() {
-        assertEquals("space", Theme.SPACE.getFolder());
+    void languagesFolderIsLanguages() {
+        assertEquals("languages", Theme.LANGUAGES.getFolder());
     }
 
     @Test
@@ -32,9 +32,9 @@ class ThemeTest {
     }
 
     @Test
-    void spaceHasEighteenDistinctMotifs() {
-        List<String> motifs = Theme.SPACE.getMotifsFor(6);
-        assertEquals(18, new HashSet<>(motifs).size(), "all 18 space motifs must be unique");
+    void languagesHasEighteenDistinctMotifs() {
+        List<String> motifs = Theme.LANGUAGES.getMotifsFor(6);
+        assertEquals(18, new HashSet<>(motifs).size(), "all 18 language motifs must be unique");
     }
 
     @Test

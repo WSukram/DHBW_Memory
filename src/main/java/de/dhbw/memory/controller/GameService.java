@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
  *       flip-back after {@value #FLIP_BACK_DELAY_MS} ms and notifies the view
  *       via the {@code afterReset} callback (run inside {@link UI#access}).</li>
  * </ol>
- * </p>
  *
  * @author Markus Wenninger
  */
@@ -139,6 +138,10 @@ public class GameService {
         return theme;
     }
 
+    /**
+     * Returns the number of whole seconds that have passed since {@link #startGame}
+     * was called. Used by the status bar timer.
+     */
     public long getElapsedSeconds() {
         return (System.currentTimeMillis() - startTimeMs) / 1000;
     }

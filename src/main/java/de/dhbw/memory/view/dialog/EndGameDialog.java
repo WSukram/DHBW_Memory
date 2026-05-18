@@ -23,6 +23,10 @@ import de.dhbw.memory.model.Player;
 public class EndGameDialog extends Dialog {
 
     /**
+     * Builds the end-of-game overlay for the given finished {@link Game}: headline
+     * (winner / tie / single-player completion), per-player stats panel, elapsed
+     * time and total moves, and the two restart buttons.
+     *
      * @param game            the finished game (used for winner detection + stats)
      * @param elapsedSeconds  total play time
      * @param onSameSettings  invoked when the user clicks "Same Settings" — should

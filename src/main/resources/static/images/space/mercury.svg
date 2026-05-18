@@ -1,71 +1,58 @@
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
-      <stop offset="0%" stop-color="#1a2847"/>
-      <stop offset="100%" stop-color="#050912"/>
-    </radialGradient>
     <radialGradient id="mep" cx="35%" cy="32%" r="78%">
-      <stop offset="0%" stop-color="#E0E0E0"/>
-      <stop offset="40%" stop-color="#9E9E9E"/>
-      <stop offset="80%" stop-color="#5D4037"/>
+      <stop offset="0%"   stop-color="#E0E0E0"/>
+      <stop offset="40%"  stop-color="#9E9E9E"/>
+      <stop offset="80%"  stop-color="#5D4037"/>
       <stop offset="100%" stop-color="#1B1B1B"/>
     </radialGradient>
     <radialGradient id="meterm" cx="80%" cy="50%" r="60%">
-      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
-      <stop offset="70%" stop-color="#000000" stop-opacity="0.55"/>
+      <stop offset="0%"   stop-color="#000000" stop-opacity="0"/>
+      <stop offset="70%"  stop-color="#000000" stop-opacity="0.55"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0.85"/>
     </radialGradient>
     <clipPath id="mec"><circle cx="50" cy="50" r="32"/></clipPath>
   </defs>
-  <rect width="100" height="100" fill="url(#bg)"/>
-  <!-- faint stars -->
-  <circle cx="14" cy="16" r="0.8" fill="white" opacity="0.7"/>
-  <circle cx="86" cy="22" r="0.6" fill="white" opacity="0.5"/>
-  <circle cx="10" cy="78" r="0.7" fill="white" opacity="0.6"/>
-  <circle cx="90" cy="88" r="0.8" fill="white" opacity="0.7"/>
-  <circle cx="78" cy="12" r="0.5" fill="white" opacity="0.4"/>
-  <circle cx="22" cy="90" r="0.5" fill="white" opacity="0.4"/>
 
   <!-- planet body -->
   <circle cx="50" cy="50" r="32" fill="url(#mep)"/>
 
   <g clip-path="url(#mec)">
     <!-- subtle surface mottling -->
-    <ellipse cx="36" cy="46" rx="18" ry="6" fill="#8D7E78" opacity="0.25"/>
-    <ellipse cx="58" cy="60" rx="14" ry="5" fill="#6D4C41" opacity="0.25"/>
-    <ellipse cx="56" cy="38" rx="10" ry="3" fill="#BCAAA4" opacity="0.18"/>
+    <ellipse cx="36" cy="46" rx="18" ry="6" fill="#8D7E78" opacity="0.3"/>
+    <ellipse cx="58" cy="60" rx="14" ry="5" fill="#6D4C41" opacity="0.3"/>
+    <ellipse cx="56" cy="38" rx="10" ry="3" fill="#BCAAA4" opacity="0.22"/>
 
     <!-- large Caloris-like basin -->
     <g>
-      <circle cx="38" cy="40" r="11" fill="#3E2723" opacity="0.55"/>
-      <circle cx="38" cy="40" r="11" fill="none" stroke="#D7CCC8" stroke-width="0.9" opacity="0.6"/>
-      <circle cx="38" cy="40" r="8"  fill="#5D4037" opacity="0.4"/>
-      <ellipse cx="35" cy="37" rx="3" ry="1.5" fill="#FFFFFF" opacity="0.18"/>
+      <circle cx="38" cy="40" r="11" fill="#3E2723" opacity="0.6"/>
+      <circle cx="38" cy="40" r="11" fill="none" stroke="#D7CCC8" stroke-width="0.9" opacity="0.7"/>
+      <circle cx="38" cy="40" r="8"  fill="#5D4037" opacity="0.45"/>
+      <ellipse cx="35" cy="37" rx="3" ry="1.5" fill="#FFFFFF" opacity="0.22"/>
     </g>
 
-    <!-- medium craters with rim highlight + shadow -->
+    <!-- medium craters -->
     <g>
-      <circle cx="60" cy="56" r="6.5" fill="#3E2723" opacity="0.6"/>
-      <circle cx="60" cy="56" r="6.5" fill="none" stroke="#D7CCC8" stroke-width="0.7" opacity="0.55"/>
-      <path d="M 56,52 A 6.5,6.5 0 0 1 64,52" stroke="#000" stroke-width="0.6" fill="none" opacity="0.4"/>
+      <circle cx="60" cy="56" r="6.5" fill="#3E2723" opacity="0.65"/>
+      <circle cx="60" cy="56" r="6.5" fill="none" stroke="#D7CCC8" stroke-width="0.7" opacity="0.6"/>
+      <path d="M 56,52 A 6.5,6.5 0 0 1 64,52" stroke="#000" stroke-width="0.6" fill="none" opacity="0.5"/>
     </g>
     <g>
-      <circle cx="44" cy="62" r="5" fill="#3E2723" opacity="0.6"/>
-      <circle cx="44" cy="62" r="5" fill="none" stroke="#D7CCC8" stroke-width="0.6" opacity="0.55"/>
-      <path d="M 40.5,58.5 A 5,5 0 0 1 47.5,58.5" stroke="#000" stroke-width="0.5" fill="none" opacity="0.35"/>
+      <circle cx="44" cy="62" r="5" fill="#3E2723" opacity="0.65"/>
+      <circle cx="44" cy="62" r="5" fill="none" stroke="#D7CCC8" stroke-width="0.6" opacity="0.6"/>
+      <path d="M 40.5,58.5 A 5,5 0 0 1 47.5,58.5" stroke="#000" stroke-width="0.5" fill="none" opacity="0.4"/>
     </g>
     <g>
-      <circle cx="58" cy="34" r="3.2" fill="#3E2723" opacity="0.6"/>
-      <circle cx="58" cy="34" r="3.2" fill="none" stroke="#D7CCC8" stroke-width="0.5" opacity="0.5"/>
+      <circle cx="58" cy="34" r="3.2" fill="#3E2723" opacity="0.65"/>
+      <circle cx="58" cy="34" r="3.2" fill="none" stroke="#D7CCC8" stroke-width="0.5" opacity="0.55"/>
     </g>
 
     <!-- small craters -->
-    <circle cx="30" cy="58" r="2" fill="#3E2723" opacity="0.5"/>
-    <circle cx="30" cy="58" r="2" fill="none" stroke="#D7CCC8" stroke-width="0.4" opacity="0.4"/>
-    <circle cx="68" cy="42" r="1.8" fill="#3E2723" opacity="0.5"/>
-    <circle cx="50" cy="70" r="1.5" fill="#3E2723" opacity="0.5"/>
-    <circle cx="70" cy="68" r="1.2" fill="#3E2723" opacity="0.4"/>
-    <circle cx="34" cy="68" r="1" fill="#3E2723" opacity="0.4"/>
+    <circle cx="30" cy="58" r="2"   fill="#3E2723" opacity="0.55"/>
+    <circle cx="68" cy="42" r="1.8" fill="#3E2723" opacity="0.55"/>
+    <circle cx="50" cy="70" r="1.5" fill="#3E2723" opacity="0.55"/>
+    <circle cx="70" cy="68" r="1.2" fill="#3E2723" opacity="0.45"/>
+    <circle cx="34" cy="68" r="1"   fill="#3E2723" opacity="0.45"/>
 
     <!-- terminator shadow -->
     <circle cx="50" cy="50" r="32" fill="url(#meterm)"/>

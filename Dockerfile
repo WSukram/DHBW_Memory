@@ -25,7 +25,7 @@ RUN mvn -B -DskipTests package -P production
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-COPY --from=build /workspace/target/DHBW_Memory-*.jar app.jar
+COPY --from=build /workspace/target/DHBW-Memory-Markus-Wenninger.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

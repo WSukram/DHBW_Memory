@@ -1,0 +1,26 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- gopher body -->
+  <ellipse cx="50" cy="58" rx="30" ry="32" fill="#00ADD8"/>
+  <!-- belly -->
+  <ellipse cx="50" cy="68" rx="20" ry="18" fill="#CFEFF7"/>
+  <!-- ears -->
+  <ellipse cx="28" cy="30" rx="6" ry="9" fill="#00ADD8"/>
+  <ellipse cx="72" cy="30" rx="6" ry="9" fill="#00ADD8"/>
+  <ellipse cx="28" cy="32" rx="3" ry="5" fill="#F8C5C9"/>
+  <ellipse cx="72" cy="32" rx="3" ry="5" fill="#F8C5C9"/>
+  <!-- eyes (whites) -->
+  <circle cx="40" cy="46" r="9" fill="#fff"/>
+  <circle cx="60" cy="46" r="9" fill="#fff"/>
+  <!-- pupils -->
+  <circle cx="43" cy="46" r="3.5" fill="#000"/>
+  <circle cx="63" cy="46" r="3.5" fill="#000"/>
+  <!-- nose -->
+  <ellipse cx="50" cy="58" rx="5" ry="3.5" fill="#000"/>
+  <rect x="49" y="58" width="2" height="6" fill="#000"/>
+  <!-- teeth -->
+  <rect x="46" y="64" width="3" height="5" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <rect x="51" y="64" width="3" height="5" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <!-- arms -->
+  <ellipse cx="22" cy="64" rx="5" ry="9" fill="#00ADD8"/>
+  <ellipse cx="78" cy="64" rx="5" ry="9" fill="#00ADD8"/>
+</svg>

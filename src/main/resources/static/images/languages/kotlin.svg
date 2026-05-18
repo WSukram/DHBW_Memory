@@ -1,0 +1,11 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ktG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E44857"/>
+      <stop offset="50%" stop-color="#C711E1"/>
+      <stop offset="100%" stop-color="#7F52FF"/>
+    </linearGradient>
+  </defs>
+  <path d="M10,10 L70,10 L90,30 L90,90 L10,90 L50,50 Z" fill="url(#ktG)"/>
+  <path d="M10,10 L50,50 L10,90 Z" fill="url(#ktG)" opacity="0.95"/>
+</svg>

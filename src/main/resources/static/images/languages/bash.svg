@@ -1,0 +1,11 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- terminal window -->
+  <rect x="6" y="14" width="88" height="72" rx="6" fill="#2D2D2D"/>
+  <rect x="6" y="14" width="88" height="14" rx="6" fill="#3C3C3C"/>
+  <!-- traffic lights -->
+  <circle cx="14" cy="21" r="2.4" fill="#FF5F57"/>
+  <circle cx="22" cy="21" r="2.4" fill="#FEBC2E"/>
+  <circle cx="30" cy="21" r="2.4" fill="#28C840"/>
+  <!-- prompt -->
+  <text x="16" y="62" font-family="'Courier New',monospace" font-weight="700" font-size="26" fill="#4CAF50">&gt;_</text>
+</svg>

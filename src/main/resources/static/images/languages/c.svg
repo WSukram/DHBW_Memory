@@ -1,0 +1,6 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- hexagon shield -->
+  <path d="M50,6 L88,28 L88,72 L50,94 L12,72 L12,28 Z" fill="#283593"/>
+  <path d="M50,12 L83,30 L83,70 L50,88 L17,70 L17,30 Z" fill="#3949AB"/>
+  <text x="50" y="68" text-anchor="middle" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="700" font-size="50" fill="#fff">C</text>
+</svg>

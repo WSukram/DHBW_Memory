@@ -1,0 +1,5 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <path d="M14,10 L86,10 L79,82 L50,92 L21,82 Z" fill="#264DE4"/>
+  <path d="M50,16 L50,86 L74,79 L80,16 Z" fill="#2965F1"/>
+  <text x="50" y="68" text-anchor="middle" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="700" font-size="40" fill="#fff">3</text>
+</svg>

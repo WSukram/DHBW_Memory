@@ -1,0 +1,20 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pyB" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5A9FD4"/>
+      <stop offset="100%" stop-color="#306998"/>
+    </linearGradient>
+    <linearGradient id="pyY" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE873"/>
+      <stop offset="100%" stop-color="#FFD43B"/>
+    </linearGradient>
+  </defs>
+  <!-- blue snake (top-left) -->
+  <path d="M40,8 Q22,8 22,26 L22,42 L52,42 Q60,42 60,50 L60,58 L40,58 Q22,58 22,76 L22,86 Q22,94 32,94 L40,94 Q40,82 50,82 L60,82 L60,82 Q60,72 50,72 L30,72 Q26,72 26,68 L26,58 Q26,52 32,52 L62,52 Q78,52 78,36 L78,22 Q78,8 60,8 Z"
+        fill="url(#pyB)"/>
+  <circle cx="32" cy="18" r="3" fill="#fff"/>
+  <!-- yellow snake (bottom-right) mirror -->
+  <path d="M60,92 Q78,92 78,74 L78,58 L48,58 Q40,58 40,50 L40,42 L60,42 Q78,42 78,24 L78,14 Q78,6 68,6 L60,6 Q60,18 50,18 L40,18 Q40,28 50,28 L70,28 Q74,28 74,32 L74,42 Q74,48 68,48 L38,48 Q22,48 22,64 L22,78 Q22,92 40,92 Z"
+        fill="url(#pyY)"/>
+  <circle cx="68" cy="82" r="3" fill="#fff"/>
+</svg>

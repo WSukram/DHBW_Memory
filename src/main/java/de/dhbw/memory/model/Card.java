@@ -51,14 +51,10 @@ public class Card {
     }
 
     /**
-     * Marks the card as matched and keeps it face-up permanently.
-     *
-     * @param matched true to match the card; false is allowed but unusual
+     * Marks the card as permanently matched and keeps it face-up. Idempotent.
      */
-    public void setMatched(boolean matched) {
-        this.matched = matched;
-        if (matched) {
-            faceUp = true;
-        }
+    public void match() {
+        this.matched = true;
+        this.faceUp = true;
     }
 }

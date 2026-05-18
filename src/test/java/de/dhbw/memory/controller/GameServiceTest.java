@@ -1,8 +1,8 @@
 package de.dhbw.memory.controller;
 
 import de.dhbw.memory.model.Board;
-import de.dhbw.memory.model.Card;
 import de.dhbw.memory.model.FlipResult;
+import de.dhbw.memory.model.TestBoards;
 import de.dhbw.memory.model.Theme;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,12 +23,8 @@ class GameServiceTest {
 
     private GameService service;
 
-    /** Positions of a matching pair in the seed-0 shuffle of a 4×4 CRYPTO board. */
-    private int matchPos1;
-    private int matchPos2;
-    /** Positions of two cards with different motifs. */
-    private int mismatchPos1;
-    private int mismatchPos2;
+    private TestBoards.Pair match;
+    private TestBoards.Pair mismatch;
 
     @BeforeEach
     void setUp() {
@@ -72,40 +68,40 @@ class GameServiceTest {
     @Test
     void firstFlipReturnsFirstFlip() {
         startAndLocatePositions();
-        assertEquals(FlipResult.FIRST_FLIP, service.flip(matchPos1, null, () -> {}));
+        assertEquals(FlipResult.FIRST_FLIP, service.flip(match.a(), null, () -> {}));
     }
 
     @Test
     void secondFlipMatchReturnsMatch() {
         startAndLocatePositions();
-        service.flip(matchPos1, null, () -> {});
-        assertEquals(FlipResult.MATCH, service.flip(matchPos2, null, () -> {}));
+        service.flip(match.a(), null, () -> {});
+        assertEquals(FlipResult.MATCH, service.flip(match.b(), null, () -> {}));
     }
 
     @Test
     void matchDoesNotSetWaitingFlag() {
         startAndLocatePositions();
-        service.flip(matchPos1, null, () -> {});
-        service.flip(matchPos2, null, () -> {});
+        service.flip(match.a(), null, () -> {});
+        service.flip(match.b(), null, () -> {});
         assertFalse(service.isWaitingForFlipBack());
     }
 
     @Test
     void noMatchSetsWaitingFlag() {
         startAndLocatePositions();
-        service.flip(mismatchPos1, null, () -> {});
+        service.flip(mismatch.a(), null, () -> {});
         // Pass null for UI — the scheduled task will NPE only when it fires (1500 ms later),
-        // not during the flip call itself. We cancel that by calling shutdown immediately after.
-        service.flip(mismatchPos2, null, () -> {});
+        // not during the flip call itself. Cancel it via shutdown() immediately after.
+        service.flip(mismatch.b(), null, () -> {});
         assertTrue(service.isWaitingForFlipBack());
-        service.shutdown(); // cancel the scheduled task so it doesn't fire during cleanup
+        service.shutdown();
     }
 
     @Test
     void flipBlockedWhileWaiting() {
         startAndLocatePositions();
-        service.flip(mismatchPos1, null, () -> {});
-        service.flip(mismatchPos2, null, () -> {});
+        service.flip(mismatch.a(), null, () -> {});
+        service.flip(mismatch.b(), null, () -> {});
         // While the delay timer is running, any additional flip must return INVALID.
         assertEquals(FlipResult.INVALID, service.flip(0, null, () -> {}));
         service.shutdown();
@@ -114,8 +110,8 @@ class GameServiceTest {
     @Test
     void startGameResetsWaitingFlag() {
         startAndLocatePositions();
-        service.flip(mismatchPos1, null, () -> {});
-        service.flip(mismatchPos2, null, () -> {});
+        service.flip(mismatch.a(), null, () -> {});
+        service.flip(mismatch.b(), null, () -> {});
         assertTrue(service.isWaitingForFlipBack());
         // Starting a new game must clear the flag so the board is immediately playable.
         service.startGame(List.of("Alice"), 4, Theme.CRYPTO);
@@ -123,39 +119,14 @@ class GameServiceTest {
         service.shutdown();
     }
 
-    // -------------------------------------------------------------------------
-    // Helper
-    // -------------------------------------------------------------------------
-
     /**
-     * Calls {@code startGame} with a fixed seed board and locates a matching pair
-     * and a mismatching pair so tests are independent of the shuffle result.
+     * Calls {@code startGame} and locates a matching pair plus a disjoint mismatching
+     * pair so the tests are independent of the random shuffle.
      */
     private void startAndLocatePositions() {
-        // startGame uses System.currentTimeMillis() for the seed, so we instead
-        // build the board manually and replace the game via the service's own method.
-        // Easier: just call startGame (random seed) and locate pairs dynamically.
         service.startGame(List.of("Alice", "Bob"), 4, Theme.CRYPTO);
-
-        List<Card> cards = service.getGame().getBoard().getCards();
-        matchPos1 = -1; matchPos2 = -1;
-        mismatchPos1 = -1; mismatchPos2 = -1;
-
-        for (int i = 0; i < cards.size() && matchPos2 == -1; i++) {
-            for (int j = i + 1; j < cards.size() && matchPos2 == -1; j++) {
-                if (cards.get(i).getMotif().equals(cards.get(j).getMotif())) {
-                    matchPos1 = i; matchPos2 = j;
-                }
-            }
-        }
-        for (int i = 0; i < cards.size() && mismatchPos2 == -1; i++) {
-            for (int j = i + 1; j < cards.size() && mismatchPos2 == -1; j++) {
-                if (!cards.get(i).getMotif().equals(cards.get(j).getMotif())
-                        && i != matchPos1 && i != matchPos2
-                        && j != matchPos1 && j != matchPos2) {
-                    mismatchPos1 = i; mismatchPos2 = j;
-                }
-            }
-        }
+        Board board = service.getGame().getBoard();
+        match = TestBoards.locateMatch(board);
+        mismatch = TestBoards.locateMismatch(board, match);
     }
 }

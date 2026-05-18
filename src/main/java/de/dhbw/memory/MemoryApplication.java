@@ -33,6 +33,12 @@ import java.util.Map;
 @Push(transport = Transport.WEBSOCKET_XHR)
 public class MemoryApplication implements AppShellConfigurator {
 
+    /**
+     * Boots the Spring Boot context (and, with it, the embedded Tomcat
+     * + Vaadin runtime) so the game is reachable in the browser.
+     *
+     * @param args standard JVM command-line arguments, forwarded to Spring
+     */
     public static void main(String[] args) {
         SpringApplication.run(MemoryApplication.class, args);
     }

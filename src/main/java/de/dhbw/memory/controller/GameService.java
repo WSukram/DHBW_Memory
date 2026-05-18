@@ -109,9 +109,16 @@ public class GameService {
 
         if (result == FlipResult.NO_MATCH) {
             waitingForFlipBack = true;
+            // Capture the current game so a quick restart cannot make this
+            // delayed task operate on a freshly-started game (subtle race).
+            final Game pending = game;
             scheduler.schedule(() -> {
-                game.resetMismatch();
-                waitingForFlipBack = false;
+                pending.resetMismatch();
+                // Only clear the flag if no new game has replaced this one in
+                // the meantime — otherwise the new game is in its own state.
+                if (pending == game) {
+                    waitingForFlipBack = false;
+                }
                 // UI.access() acquires the Vaadin session lock and pushes the
                 // runnable onto the UI thread — safe to call from any thread.
                 // afterReset::run adapts Runnable to Vaadin's Command functional interface.

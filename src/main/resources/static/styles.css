@@ -446,7 +446,8 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     gap: 12px;
     color: var(--text-secondary);
     font-size: 0.92rem;
-    line-height: 1.6;
+    /* Tall enough that wrapped lines containing .kbd chips don't overlap. */
+    line-height: 1.9;
 }
 
 .dialog-rule > .material-symbols-outlined {
@@ -456,25 +457,29 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     flex-shrink: 0;
 }
 
-/* Keyboard-key chip. inline-flex + vertical-align keeps the chips on the
-   text baseline so prose like "flip with [Space]" reads naturally. */
+/* Keyboard-key chip. vertical-align: middle + a tiny top offset keeps the
+   chips visually centered on the surrounding text cap-height (baseline-
+   aligned chips float above the text and look detached). */
 .kbd {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 7px;
-    margin: 0 1px;
+    min-width: 26px;
+    height: 24px;
+    padding: 0 8px;
+    margin: 0 2px;
     background: var(--surface-container-high);
     border: 1px solid var(--outline-variant);
-    border-radius: 5px;
+    border-radius: 6px;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
     font-family: 'JetBrains Mono', 'Menlo', monospace;
-    font-size: 0.78rem;
-    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
     line-height: 1;
-    vertical-align: -4px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
 }
 
 /* End-game dialog: per-player stats panel. */

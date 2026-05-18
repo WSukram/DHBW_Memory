@@ -85,8 +85,8 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         statusContent.addClassName("status-content");
         timerSpan.setId("game-timer");
 
-        Button quitBtn = circleButton("←", "End current game and return to setup", this::showQuitConfirm);
-        Button helpBtn = circleButton("?", "Show help", this::showHelpDialog);
+        Button quitBtn = iconButton("arrow_back", "End current game and return to setup", this::showQuitConfirm);
+        Button helpBtn = iconButton("help", "Show help", this::showHelpDialog);
 
         statusBar.addClassNames("status-bar", "glass-surface");
         statusBar.add(statusContent, timerSpan, quitBtn, helpBtn);
@@ -302,10 +302,16 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         return score == 1 ? "1 pair" : score + " pairs";
     }
 
-    /** Factory for the small circular icon-style buttons in the status bar (←, ?). */
-    private Button circleButton(String label, String ariaLabel, Runnable onClick) {
-        Button b = new Button(label);
-        b.addClassName("circle-btn");
+    /**
+     * Factory for the small Material-Symbols icon buttons in the status bar
+     * (arrow_back, help). The icon name is a Material Symbols ligature.
+     */
+    private Button iconButton(String iconName, String ariaLabel, Runnable onClick) {
+        Span icon = new Span(iconName);
+        icon.addClassName("material-symbols-outlined");
+
+        Button b = new Button(icon);
+        b.addClassName("icon-btn");
         b.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         b.getElement().setAttribute("aria-label", ariaLabel);
         b.addClickListener(e -> {

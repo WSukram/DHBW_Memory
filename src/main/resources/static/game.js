@@ -101,6 +101,32 @@ window.dhbwMemory = (function () {
         document.addEventListener('keydown', window._keyListener);
     }
 
+    /**
+     * Wires arrow-key navigation across every segmented control on the page.
+     *
+     * Each [role="radiogroup"] gets one keydown listener; arrow keys move
+     * focus to the previous/next [role="radio"] sibling AND click it so the
+     * Vaadin-side value updates immediately. Idempotent — guarded by the
+     * data-seg-init attribute so calling it again on re-render is a no-op.
+     */
+    function initSegmented() {
+        document.querySelectorAll('[role="radiogroup"]:not([data-seg-init])').forEach(function (group) {
+            group.setAttribute('data-seg-init', '1');
+            group.addEventListener('keydown', function (e) {
+                if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight'
+                    && e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+                const items = Array.from(group.querySelectorAll('[role="radio"]'));
+                const i = items.indexOf(document.activeElement);
+                if (i === -1) return;
+                e.preventDefault();
+                const forward = e.key === 'ArrowRight' || e.key === 'ArrowDown';
+                const next = (i + (forward ? 1 : -1) + items.length) % items.length;
+                items[next].focus();
+                items[next].click();
+            });
+        });
+    }
+
     // ── Theme switching ──────────────────────────────────────────────────
     //
     // Three user-facing modes: 'light', 'dark', 'system'. The preference is
@@ -201,6 +227,7 @@ window.dhbwMemory = (function () {
         startTimer: startTimer,
         stopTimer: stopTimer,
         initKeyboard: initKeyboard,
+        initSegmented: initSegmented,
         setTheme: setTheme,
         getThemePref: getThemePref,
         showConfetti: showConfetti

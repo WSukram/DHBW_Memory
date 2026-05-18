@@ -15,12 +15,25 @@
     --surface-glass:        rgba(23, 31, 51, 0.75);
     --surface-glass-border: rgba(255, 255, 255, 0.06);
 
+    /* Solid surface layers — mirror WalletPulse's surface-container ramp.
+       Glass is reserved for floating UI (status bar, dialogs); the setup
+       card and other content panels use these instead. */
+    --surface-container:         #171f33;
+    --surface-container-low:     #131b2e;
+    --surface-container-high:    #222a3d;
+    --surface-container-highest: #2d3449;
+    --outline-variant:           rgba(255, 255, 255, 0.10);
+
     --text-primary:   #dae2fd;
     --text-secondary: #c7c4d8;
     --text-muted:     #8090b0;
     --text-dim:       #6070a0;
     --text-on-card:   #1c1b1f;
     --text-timer:     #a0b0d0;
+
+    /* Keyboard-focus outline — needs to invert in light mode so it stays
+       visible on the white card faces. */
+    --focus-ring:     #ffffff;
 
     --shadow-card:   0 4px 12px rgba(0, 0, 0, 0.35);
     --shadow-glass:  0 10px 30px rgba(0, 0, 0, 0.35);
@@ -29,10 +42,18 @@
 /* Light mode overrides — kept on :root[theme="light"] (not [theme="light"])
    so specificity beats the :root defaults above without !important. */
 :root[theme="light"] {
-    --bg-deep:        #f5f7fc;
+    /* Slight lavender tint mirrors WP's #fffbff body — keeps the light theme
+       from reading as a neutral Bootstrap-grey page. */
+    --bg-deep:        #fbf8ff;
 
     --surface-glass:        rgba(255, 255, 255, 0.85);
     --surface-glass-border: rgba(0, 0, 0, 0.08);
+
+    --surface-container:         #f1ecf9;
+    --surface-container-low:     #f7f2ff;
+    --surface-container-high:    #ece6f6;
+    --surface-container-highest: #e6e0f0;
+    --outline-variant:           rgba(0, 0, 0, 0.10);
 
     --text-primary:   #1a1a2e;
     --text-secondary: #3a3a4e;
@@ -40,6 +61,8 @@
     --text-dim:       #8a8a9e;
     --text-on-card:   #1c1b1f;
     --text-timer:     #4a4a5e;
+
+    --focus-ring:     #1a1a2e;
 
     --shadow-card:   0 4px 12px rgba(0, 0, 0, 0.15);
     --shadow-glass:  0 10px 30px rgba(0, 0, 0, 0.10);
@@ -108,8 +131,164 @@
 
 .setup-card {
     /* clamp scales padding smoothly from mobile to desktop, no media query needed. */
-    padding: clamp(16px, 4vw, 32px);
+    padding: clamp(20px, 4vw, 32px);
     box-sizing: border-box;
+}
+
+/* ── Solid surface card (content panels) ────────────────────────────────────
+   WalletPulse uses surface-container + outline-variant for content cards and
+   reserves glass for floating UI. The setup card uses .surface-card so it
+   reads as a solid panel rather than a sheet floating over the body.
+   ────────────────────────────────────────────────────────────────────────── */
+.surface-card {
+    background: var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    border-radius: 16px;
+    box-shadow: var(--shadow-glass);
+}
+
+/* ── Field group (small uppercase label above the control) ─────────────── */
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-left: 2px;
+}
+
+/* ── Segmented control (pill row replacement for RadioButtonGroup) ──────────
+   Container = role=radiogroup, children = role=radio NativeButtons. Both the
+   default ".segmented" pill row and the larger ".chips" variant share this
+   selector tree.
+   ────────────────────────────────────────────────────────────────────────── */
+.segmented {
+    display: inline-flex;
+    align-items: stretch;
+    background: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+    width: fit-content;
+}
+
+.segmented > .seg {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    font-family: inherit;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segmented > .seg:hover {
+    color: var(--text-primary);
+    background: var(--surface-container-high);
+}
+
+.segmented > .seg.active {
+    background: var(--brand-purple);
+    color: #fff;
+}
+
+.segmented > .seg:focus-visible {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 2px;
+}
+
+/* Icon-only variant (e.g. Light / Dark / System) — fixed-width square cells. */
+.segmented.icon-only > .seg {
+    width: 38px;
+    height: 32px;
+    padding: 0;
+}
+
+.segmented.icon-only .material-symbols-outlined {
+    font-size: 19px;
+}
+
+.icon-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Chips (bigger card-style segments for the Theme picker) ───────────── */
+.chips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+}
+
+.chips > .seg {
+    appearance: none;
+    border: 1px solid var(--outline-variant);
+    background: var(--surface-container-low);
+    color: var(--text-secondary);
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    font-family: inherit;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.chips > .seg:hover {
+    border-color: var(--brand-purple);
+    color: var(--text-primary);
+    background: var(--surface-container);
+}
+
+.chips > .seg.active {
+    border-color: var(--brand-purple);
+    background: rgba(134, 59, 255, 0.12);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 1px var(--brand-purple);
+}
+
+.chips > .seg:focus-visible {
+    outline: 2px solid var(--brand-purple);
+    outline-offset: 2px;
+}
+
+.chip-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.chip-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* ── Status bar (in-game) ───────────────────────────────────────────────── */
@@ -164,16 +343,24 @@
     font-size: 0.85rem;
 }
 
-/* ── Small circular status-bar buttons (←, ?) ──────────────────────────── */
-.circle-btn {
-    min-width: 28px;
-    width: 28px;
-    height: 28px;
+/* ── Status-bar icon buttons (arrow_back, help) ────────────────────────── */
+.icon-btn {
+    min-width: 32px;
+    width: 32px;
+    height: 32px;
     padding: 0;
-    border-radius: 50%;
-    font-size: 0.85rem;
-    font-weight: 700;
+    border-radius: 8px;
+    color: var(--text-secondary);
     cursor: pointer;
+}
+
+.icon-btn:hover {
+    background: var(--surface-container-high);
+    color: var(--text-primary);
+}
+
+.icon-btn .material-symbols-outlined {
+    font-size: 18px;
 }
 
 /* ── Card grid (size-aware via data-size attribute) ─────────────────────── */
@@ -324,7 +511,7 @@
    first arrow key / removed on the next mousedown). This way the ring
    disappears the moment the user goes back to the mouse. */
 body.keyboard-mode .card-wrapper.keyboard-focused {
-    outline: 2px solid #ffffff;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 3px;
 }
 
@@ -339,20 +526,13 @@ body.keyboard-mode .card-wrapper.keyboard-focused {
     animation-delay: var(--delay, 0ms);
 }
 
-/* ── Active player pulse ring ───────────────────────────────────────────── */
-@keyframes pulseRing {
-    0%   { box-shadow: 0 0 0 0   rgba(134, 59, 255, 0.65); }
-    70%  { box-shadow: 0 0 0 8px rgba(134, 59, 255, 0);    }
-    100% { box-shadow: 0 0 0 0   rgba(134, 59, 255, 0);    }
-}
-
+/* ── Active player chip (static filled pill — no pulse) ─────────────────── */
 .player-active {
     display: inline-block;
-    animation: pulseRing 1.6s ease-out infinite;
     border-radius: 6px;
     padding: 3px 10px;
-    background: rgba(134, 59, 255, 0.13);
-    border: 1px solid rgba(134, 59, 255, 0.45);
+    background: rgba(134, 59, 255, 0.18);
+    border: 1px solid rgba(134, 59, 255, 0.55);
     color: var(--text-primary);
 }
 

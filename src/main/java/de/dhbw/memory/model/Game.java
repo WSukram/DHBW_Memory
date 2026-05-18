@@ -1,6 +1,7 @@
 package de.dhbw.memory.model;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -82,8 +83,8 @@ public class Game {
      * Active player keeps the turn (bonus-turn rule from requirement #FANF10).
      */
     private void resolveMatch() {
-        firstFlipped.setMatched(true);
-        secondFlipped.setMatched(true);
+        firstFlipped.match();
+        secondFlipped.match();
         players.get(activePlayerIdx).addPoint();
         firstFlipped = null;
         secondFlipped = null;
@@ -121,7 +122,7 @@ public class Game {
         if (players.size() == 1) {
             return players.get(0);
         }
-        Player best = players.stream().max((a, b) -> Integer.compare(a.getScore(), b.getScore())).orElseThrow();
+        Player best = players.stream().max(Comparator.comparingInt(Player::getScore)).orElseThrow();
         long topCount = players.stream().filter(p -> p.getScore() == best.getScore()).count();
         return topCount == 1 ? best : null;
     }

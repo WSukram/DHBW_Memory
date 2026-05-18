@@ -34,19 +34,20 @@ class CardTest {
     }
 
     @Test
-    void setMatchedTrueSetsMatchedAndFaceUp() {
+    void matchMarksMatchedAndFaceUp() {
         Card card = new Card(0, "btc");
-        card.setMatched(true);
+        card.match();
         assertTrue(card.isMatched());
         assertTrue(card.isFaceUp());
     }
 
     @Test
-    void setMatchedFalseDoesNotForceCardFaceUp() {
+    void matchIsIdempotent() {
         Card card = new Card(0, "btc");
-        card.setMatched(false);
-        assertFalse(card.isMatched());
-        assertFalse(card.isFaceUp());
+        card.match();
+        card.match();
+        assertTrue(card.isMatched());
+        assertTrue(card.isFaceUp());
     }
 
     @Test

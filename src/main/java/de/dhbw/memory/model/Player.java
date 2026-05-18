@@ -12,13 +12,12 @@ public class Player {
     private int turns;
 
     /**
-     * Creates a player with zero score.
+     * Creates a player with zero score and zero turns.
      *
      * @param name display name shown in the UI
      */
     public Player(String name) {
         this.name = name;
-        this.score = 0;
     }
 
     /** Returns the player's display name. */

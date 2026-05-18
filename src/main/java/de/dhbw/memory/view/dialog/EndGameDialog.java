@@ -7,6 +7,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import de.dhbw.memory.model.Game;
 import de.dhbw.memory.model.Player;
+import de.dhbw.memory.view.Labels;
 
 /**
  * End-of-game overlay: winner / tie headline, per-player stats, elapsed time,
@@ -98,7 +99,7 @@ public class EndGameDialog extends Dialog {
             left.add(pill);
         }
 
-        Span meta = new Span(pairsLabel(player.getScore()) + " · " + accuracy + "% accuracy");
+        Span meta = new Span(Labels.pairsLabel(player.getScore()) + " · " + accuracy + "% accuracy");
         meta.addClassName("stats-meta");
         Div right = new Div(meta);
 
@@ -130,10 +131,6 @@ public class EndGameDialog extends Dialog {
         long m = elapsedSeconds / 60;
         long s = elapsedSeconds % 60;
         return m + ":" + (s < 10 ? "0" : "") + s;
-    }
-
-    private static String pairsLabel(int n) {
-        return n == 1 ? "1 pair" : n + " pairs";
     }
 
     private static String movesLabel(int n) {

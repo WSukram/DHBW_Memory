@@ -247,7 +247,7 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
                 statusContent.add(arrow);
             }
 
-            Span playerSpan = new Span(player.getName() + ": " + pairsLabel(player.getScore()));
+            Span playerSpan = new Span(player.getName() + ": " + Labels.pairsLabel(player.getScore()));
             playerSpan.addClassName(isActive ? "player-active" : "player-inactive");
             statusContent.add(playerSpan);
         }
@@ -300,11 +300,6 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         keyboardFocus = 0;
         animateEntrance = true;
         refreshBoard();
-    }
-
-    /** "1 pair" vs "N pairs" — keeps the status bar grammatically correct. */
-    private static String pairsLabel(int score) {
-        return score == 1 ? "1 pair" : score + " pairs";
     }
 
     /**

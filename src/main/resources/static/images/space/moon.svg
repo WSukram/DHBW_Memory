@@ -1,0 +1,24 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="mg" cx="35%" cy="35%" r="70%">
+      <stop offset="0%"  stop-color="#FFF59D"/>
+      <stop offset="60%" stop-color="#E0B84B"/>
+      <stop offset="100%" stop-color="#7B5E22"/>
+    </radialGradient>
+    <mask id="cm">
+      <rect width="100" height="100" fill="white"/>
+      <circle cx="65" cy="42" r="32" fill="black"/>
+    </mask>
+  </defs>
+
+  <!-- crescent -->
+  <circle cx="50" cy="50" r="36" fill="url(#mg)" mask="url(#cm)"/>
+
+  <!-- craters on the visible side -->
+  <ellipse cx="32" cy="58" rx="6"   ry="5"   fill="#8B6E2E" opacity="0.55"/>
+  <ellipse cx="32" cy="58" rx="3.5" ry="3"   fill="#6B5320" opacity="0.65"/>
+  <ellipse cx="24" cy="46" rx="4"   ry="3"   fill="#8B6E2E" opacity="0.5"/>
+  <ellipse cx="38" cy="40" rx="3"   ry="2"   fill="#8B6E2E" opacity="0.45"/>
+  <ellipse cx="26" cy="66" rx="2.5" ry="2"   fill="#8B6E2E" opacity="0.45"/>
+  <ellipse cx="35" cy="72" rx="3"   ry="2"   fill="#8B6E2E" opacity="0.45"/>
+</svg>

@@ -1,0 +1,52 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="uPlanet" cx="38%" cy="34%" r="72%">
+      <stop offset="0%"  stop-color="#B2EBF2"/>
+      <stop offset="55%" stop-color="#4DD0E1"/>
+      <stop offset="100%" stop-color="#00838F"/>
+    </radialGradient>
+    <linearGradient id="uRing" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#26C6DA" stop-opacity="0"/>
+      <stop offset="25%"  stop-color="#00ACC1" stop-opacity="1"/>
+      <stop offset="50%"  stop-color="#00838F" stop-opacity="1"/>
+      <stop offset="75%"  stop-color="#00ACC1" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#26C6DA" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="uPlanetClip"><circle cx="50" cy="50" r="28"/></clipPath>
+    <clipPath id="uBackHalf">
+      <rect x="0" y="0" width="50" height="100"/>
+    </clipPath>
+    <clipPath id="uFrontHalf">
+      <rect x="50" y="0" width="50" height="100"/>
+    </clipPath>
+  </defs>
+
+  <!-- back half of ring (left side, behind planet) -->
+  <g clip-path="url(#uBackHalf)">
+    <ellipse cx="50" cy="50" rx="6" ry="40"
+             fill="none" stroke="url(#uRing)" stroke-width="3.5"/>
+    <ellipse cx="50" cy="50" rx="10" ry="44"
+             fill="none" stroke="url(#uRing)" stroke-width="2" opacity="0.55"/>
+  </g>
+
+  <!-- planet -->
+  <circle cx="50" cy="50" r="28" fill="url(#uPlanet)"/>
+
+  <!-- atmospheric bands (vertical, matching the sideways tilt) -->
+  <g clip-path="url(#uPlanetClip)" opacity="0.4">
+    <rect x="42" y="22" width="3" height="56" fill="#00838F"/>
+    <rect x="54" y="22" width="2" height="56" fill="#00838F"/>
+    <rect x="60" y="22" width="3" height="56" fill="#006064"/>
+  </g>
+
+  <!-- specular highlight -->
+  <ellipse cx="40" cy="38" rx="8" ry="5" fill="#E0F7FA" opacity="0.45"/>
+
+  <!-- front half of ring (right side, in front of planet) -->
+  <g clip-path="url(#uFrontHalf)">
+    <ellipse cx="50" cy="50" rx="6" ry="40"
+             fill="none" stroke="url(#uRing)" stroke-width="3.5"/>
+    <ellipse cx="50" cy="50" rx="10" ry="44"
+             fill="none" stroke="url(#uRing)" stroke-width="2" opacity="0.55"/>
+  </g>
+</svg>

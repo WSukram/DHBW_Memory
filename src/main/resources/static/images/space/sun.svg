@@ -1,0 +1,35 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="sn" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FFF59D"/>
+      <stop offset="30%"  stop-color="#FFF176"/>
+      <stop offset="70%"  stop-color="#FF9800"/>
+      <stop offset="100%" stop-color="#E65100"/>
+    </radialGradient>
+    <radialGradient id="cor" cx="50%" cy="50%" r="50%">
+      <stop offset="55%"  stop-color="#FFC107" stop-opacity="0"/>
+      <stop offset="65%"  stop-color="#FFC107" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#FF6F00" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- corona -->
+  <circle cx="50" cy="50" r="42" fill="url(#cor)"/>
+
+  <!-- rays (8 directions) -->
+  <g stroke="#FB8C00" stroke-width="2.8" stroke-linecap="round">
+    <line x1="50" y1="8"  x2="50" y2="16"/>
+    <line x1="50" y1="84" x2="50" y2="92"/>
+    <line x1="8"  y1="50" x2="16" y2="50"/>
+    <line x1="84" y1="50" x2="92" y2="50"/>
+    <line x1="20" y1="20" x2="26" y2="26"/>
+    <line x1="74" y1="26" x2="80" y2="20"/>
+    <line x1="20" y1="80" x2="26" y2="74"/>
+    <line x1="74" y1="74" x2="80" y2="80"/>
+  </g>
+
+  <!-- sun body -->
+  <circle cx="50" cy="50" r="24" fill="url(#sn)"/>
+  <!-- surface highlight -->
+  <ellipse cx="44" cy="42" rx="6" ry="3" fill="#FFFFFF" opacity="0.55"/>
+</svg>

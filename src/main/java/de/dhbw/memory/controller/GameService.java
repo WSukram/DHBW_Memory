@@ -50,6 +50,8 @@ public class GameService {
             Executors.newSingleThreadScheduledExecutor();
 
     private Game game;
+    private Theme theme;
+    private long startTimeMs;
 
     /**
      * {@code volatile} so the scheduler thread's write is immediately visible
@@ -65,6 +67,8 @@ public class GameService {
      * @param theme       card theme that determines motif names
      */
     public void startGame(List<String> playerNames, int gridSize, Theme theme) {
+        this.theme = theme;
+        this.startTimeMs = System.currentTimeMillis();
         Board board = new Board(gridSize, theme);
         // System.currentTimeMillis() gives a different seed each game, so cards
         // are shuffled differently every time (requirement #FANF04).
@@ -125,6 +129,18 @@ public class GameService {
      */
     public Game getGame() {
         return game;
+    }
+
+    /**
+     * Returns the {@link Theme} chosen for the current game, or {@code null} before
+     * {@link #startGame} has been called.
+     */
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public long getElapsedSeconds() {
+        return (System.currentTimeMillis() - startTimeMs) / 1000;
     }
 
     /**

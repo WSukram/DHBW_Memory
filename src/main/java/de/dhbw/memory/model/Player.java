@@ -9,6 +9,7 @@ public class Player {
 
     private final String name;
     private int score;
+    private int turns;
 
     /**
      * Creates a player with zero score.
@@ -33,5 +34,15 @@ public class Player {
     /** Increments the score by one (called when this player matches a pair). */
     public void addPoint() {
         score++;
+    }
+
+    /** Increments the turn counter by one (called after each completed turn). */
+    public void addTurn() {
+        turns++;
+    }
+
+    /** Returns how many complete turns this player has taken. */
+    public int getTurns() {
+        return turns;
     }
 }

@@ -1,0 +1,37 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="cn" cx="38%" cy="38%" r="65%">
+      <stop offset="0%"  stop-color="#FFFFFF"/>
+      <stop offset="55%" stop-color="#4FC3F7"/>
+      <stop offset="100%" stop-color="#01579B"/>
+    </radialGradient>
+    <radialGradient id="ccoma" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#4FC3F7" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#4FC3F7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#4FC3F7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ctail" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#4FC3F7" stop-opacity="0.85"/>
+      <stop offset="50%"  stop-color="#29B6F6" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#1A237E" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cion" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#7C4DFF" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#311B92" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- broad dust tail sweeping from nucleus toward bottom-left -->
+  <path d="M 70,30 Q 56,40 36,62 Q 18,82 8,92 Q 26,76 50,52 Q 62,40 74,32 Z"
+        fill="url(#ctail)"/>
+
+  <!-- narrower ion tail -->
+  <path d="M 72,32 L 6,98 L 14,98 L 76,36 Z" fill="url(#cion)"/>
+
+  <!-- coma glow -->
+  <circle cx="72" cy="30" r="22" fill="url(#ccoma)"/>
+
+  <!-- nucleus -->
+  <circle cx="72" cy="30" r="9" fill="url(#cn)" stroke="#01579B" stroke-width="0.6"/>
+  <circle cx="69" cy="27" r="2.6" fill="#FFFFFF" opacity="0.95"/>
+</svg>

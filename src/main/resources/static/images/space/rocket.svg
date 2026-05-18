@@ -1,0 +1,33 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rb" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#90A4AE"/>
+      <stop offset="50%"  stop-color="#ECEFF1"/>
+      <stop offset="100%" stop-color="#78909C"/>
+    </linearGradient>
+    <linearGradient id="rf" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FFEB3B"/>
+      <stop offset="50%"  stop-color="#FF9800"/>
+      <stop offset="100%" stop-color="#E91E63"/>
+    </linearGradient>
+  </defs>
+
+  <!-- flame -->
+  <path d="M44,72 Q50,96 56,72 Q53,84 50,88 Q47,84 44,72 Z" fill="url(#rf)"/>
+
+  <!-- body -->
+  <path d="M40,30 Q40,16 50,8 Q60,16 60,30 L60,68 L40,68 Z"
+        fill="url(#rb)" stroke="#546E7A" stroke-width="0.8"/>
+
+  <!-- window -->
+  <circle cx="50" cy="34" r="7" fill="#1565C0"/>
+  <circle cx="50" cy="34" r="7" fill="none" stroke="#90CAF9" stroke-width="1.5"/>
+  <circle cx="48" cy="32" r="2.5" fill="#FFFFFF" opacity="0.8"/>
+
+  <!-- mid stripe -->
+  <rect x="40" y="48" width="20" height="3" fill="#E53935"/>
+
+  <!-- fins -->
+  <path d="M40,58 L28,72 L40,68 Z" fill="#E53935"/>
+  <path d="M60,58 L72,72 L60,68 Z" fill="#E53935"/>
+</svg>

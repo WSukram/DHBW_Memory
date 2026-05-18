@@ -1,13 +1,11 @@
 package de.dhbw.memory.view;
 
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -18,15 +16,30 @@ import de.dhbw.memory.model.Card;
 import de.dhbw.memory.model.FlipResult;
 import de.dhbw.memory.model.Game;
 import de.dhbw.memory.model.Player;
+import de.dhbw.memory.model.Theme;
+import de.dhbw.memory.view.component.MemoryCard;
+import de.dhbw.memory.view.dialog.EndGameDialog;
+import de.dhbw.memory.view.dialog.HelpDialog;
+import de.dhbw.memory.view.dialog.QuitConfirmDialog;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
- * The main game screen: shows the card grid, status bar, and an end-of-game overlay.
+ * The main game screen: card grid, status bar (player info + timer + buttons),
+ * and end-of-game overlay.
  *
- * <p>{@link BeforeEnterObserver} gives us a hook that runs before Vaadin renders
- * the view. We use it to redirect to the start screen if no game has been started
- * yet (e.g. when the user navigates directly to {@code /game} via the URL bar).</p>
+ * <p>Visual styling lives in {@code styles.css} (utility classes like
+ * {@code .glass-surface}, {@code .status-bar}, {@code .card-grid}), card markup
+ * lives in {@link MemoryCard}, dialogs live under {@link de.dhbw.memory.view.dialog},
+ * and the timer + keyboard helpers live in {@code /static/game.js}. This class
+ * therefore stays focused on board lifecycle and click → service wiring.</p>
  *
  * @author Markus Wenninger
  */
@@ -36,74 +49,75 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
 
     private final GameService gameService;
 
+    private final Set<Integer> mismatchedPositions = new HashSet<>();
+    private final Set<Integer> recentlyMatchedPositions = new HashSet<>();
+    private final ScheduledExecutorService matchClearScheduler =
+            Executors.newSingleThreadScheduledExecutor();
+    private final Map<Integer, MemoryCard> cards = new HashMap<>();
+
+    private final Div cardGrid = new Div();
+    // statusContent is rebuilt on each refresh; timerSpan + buttons are stable
+    // siblings so the JS setInterval can update #game-timer without interference.
+    private final Div statusBar = new Div();
+    private final Div statusContent = new Div();
+    private final Span timerSpan = new Span("0:00");
+
+    private boolean animateEntrance = false;
+    private int keyboardFocus = 0;
+
     /**
-     * FlexLayout is the Vaadin equivalent of a CSS Flexbox container.
-     * With FlexWrap.WRAP, child elements (card buttons) automatically flow
-     * onto the next row when the container width is exceeded.
+     * Spring injects {@link GameService} (it is a {@code @Service} bean).
+     * Constructor injection makes the dependency explicit and testable.
      */
-    private final FlexLayout cardGrid = new FlexLayout();
-
-    /** Single line of text above the grid showing scores and whose turn it is. */
-    private final Span statusBar = new Span();
-
     public GameView(GameService gameService) {
         this.gameService = gameService;
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setPadding(true);
+        addClassName("app-body");
 
-        cardGrid.setFlexWrap(FlexLayout.FlexWrap.WRAP);
-        // Max width keeps the grid from stretching across huge monitors.
-        cardGrid.setMaxWidth("600px");
-        cardGrid.setWidth("100%");
-        cardGrid.getStyle().set("gap", "8px");
+        UI.getCurrent().getPage().addStyleSheet("/styles.css");
+        UI.getCurrent().getPage().addJavaScript("/game.js");
 
-        statusBar.getStyle()
-                .set("font-size", "1.1rem")
-                .set("margin-bottom", "16px");
+        cardGrid.addClassName("card-grid");
 
+        statusContent.addClassName("status-content");
+        timerSpan.setId("game-timer");
+
+        Button quitBtn = iconButton("arrow_back", "End current game and return to setup", this::showQuitConfirm);
+        Button helpBtn = iconButton("help", "Show help", this::showHelpDialog);
+
+        statusBar.addClassNames("status-bar", "glass-surface");
+        statusBar.add(statusContent, timerSpan, quitBtn, helpBtn);
         add(statusBar, cardGrid);
+
+        addDetachListener(e -> matchClearScheduler.shutdownNow());
     }
 
-    /**
-     * Called by Vaadin before the view is rendered.
-     * Redirects to the start screen if no game is active.
-     */
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (gameService.getGame() == null) {
-            // forwardTo silently swaps the target view — the URL stays as /game
-            // which is fine; the user ends up at the start screen either way.
             event.forwardTo(StartView.class);
             return;
         }
+        cards.clear();
+        recentlyMatchedPositions.clear();
+        mismatchedPositions.clear();
+        keyboardFocus = 0;
+        animateEntrance = true;
         refreshBoard();
     }
 
-    /**
-     * Rebuilds the card grid and status bar from the current game state.
-     *
-     * <p>This method is called both from the UI thread (on click) and from the
-     * background thread via {@code UI.access()} after the flip-back delay.
-     * Because Vaadin's {@code UI.access()} already acquires the session lock,
-     * DOM updates inside this method are always safe.</p>
-     */
+    /** Rebuilds the card grid on first call, then only updates state on subsequent calls. */
     private void refreshBoard() {
         Game game = gameService.getGame();
-        List<Card> cards = game.getBoard().getCards();
-        int size = game.getBoard().getSize();
+        List<Card> modelCards = game.getBoard().getCards();
 
-        cardGrid.removeAll();
-
-        for (int i = 0; i < cards.size(); i++) {
-            Card card = cards.get(i);
-            // Capture i in a local variable because lambdas can only close over
-            // effectively-final variables — the loop variable i changes each iteration.
-            int position = i;
-
-            Button btn = createCardButton(card, position, size, game);
-            cardGrid.add(btn);
+        if (cards.isEmpty()) {
+            buildBoard(modelCards, game.getBoard().getSize());
+        } else {
+            updateCards(modelCards);
         }
 
         refreshStatus(game);
@@ -114,121 +128,197 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     /**
-     * Creates one card button representing the card's current state.
-     *
-     * <ul>
-     *   <li>Matched: motif label, success colour, disabled (no more clicks).</li>
-     *   <li>Face-up (flipped, not yet resolved): motif label, disabled.</li>
-     *   <li>Face-down: "?" label, clickable (unless flip-back is in progress).</li>
-     * </ul>
+     * Creates one {@link MemoryCard} per board position, then hands off to
+     * {@link #updateCards(List)} for the initial state pass and registers the
+     * client-side timer + keyboard listener.
      */
-    private Button createCardButton(Card card, int position, int size, Game game) {
-        // Each card occupies an equal share of the grid width.
-        // "calc()" is CSS — Vaadin passes inline styles straight to the browser.
-        String cardWidth = "calc((100% - " + (size - 1) * 8 + "px) / " + size + ")";
+    private void buildBoard(List<Card> modelCards, int size) {
+        cardGrid.removeAll();
+        // data-size drives the CSS-side grid template + max-width per size.
+        cardGrid.getElement().setAttribute("data-size", String.valueOf(size));
 
-        Button btn = new Button();
-        btn.setWidth(cardWidth);
-        btn.setHeight("90px");
-        btn.getStyle()
-                .set("font-size", "0.8rem")
-                .set("font-weight", "bold")
-                .set("transition", "background-color 0.2s");
+        boolean animate = animateEntrance;
+        animateEntrance = false;
 
-        if (card.isMatched()) {
-            btn.setText(card.getMotif().toUpperCase());
-            btn.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-            btn.setEnabled(false);
-
-        } else if (card.isFaceUp()) {
-            btn.setText(card.getMotif().toUpperCase());
-            btn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-            // Disabled while we are waiting for the second card or flip-back.
-            btn.setEnabled(false);
-
-        } else {
-            btn.setText("?");
-            // Disable all face-down cards while the flip-back timer is running.
-            btn.setEnabled(!gameService.isWaitingForFlipBack());
-
-            btn.addClickListener(e -> {
-                // Pass UI.getCurrent() so GameService can push the flip-back
-                // update to this specific browser tab via UI.access().
-                FlipResult result = gameService.flip(position, UI.getCurrent(), this::refreshBoard);
-
-                // INVALID means we clicked too fast (card already up, or timer running).
-                // In all other cases we refresh the board to show the new state.
-                if (result != FlipResult.INVALID) {
-                    refreshBoard();
-                }
-            });
+        Theme theme = gameService.getTheme();
+        for (int i = 0; i < modelCards.size(); i++) {
+            MemoryCard card = new MemoryCard(i, theme,
+                    modelCards.get(i).getMotif(), this::handleCardClick);
+            if (animate) card.playEntranceAnimation();
+            cardGrid.add(card);
+            cards.put(i, card);
         }
+        updateCards(modelCards);
 
-        return btn;
+        getElement().executeJs("window.dhbwMemory.startTimer($0);",
+                (double) gameService.getElapsedSeconds());
+        getElement().executeJs("window.dhbwMemory.initKeyboard(this.$server, $0);", size);
+    }
+
+    /** Idempotent state sync: every card recomputes its visual state from the model. */
+    private void updateCards(List<Card> modelCards) {
+        boolean waiting = gameService.isWaitingForFlipBack();
+        for (int i = 0; i < modelCards.size(); i++) {
+            cards.get(i).applyState(
+                    modelCards.get(i),
+                    recentlyMatchedPositions.contains(i),
+                    mismatchedPositions.contains(i),
+                    waiting,
+                    i == keyboardFocus
+            );
+        }
     }
 
     /**
-     * Updates the status bar text to show each player's score, whose turn it is,
-     * and how many turns have been played in total (requirement #FANF11).
+     * Handles a single card flip (mouse or keyboard) and orchestrates the
+     * mismatch-red / match-green ring colouring + end-of-game check.
      */
-    private void refreshStatus(Game game) {
-        StringBuilder sb = new StringBuilder();
+    private void handleCardClick(int position) {
+        UI ui = UI.getCurrent();
 
-        for (Player player : game.getPlayers()) {
-            // Mark the active player with an arrow so it's obvious whose turn it is.
-            if (player == game.getActivePlayer() && !game.isFinished()) {
-                sb.append("▶ ");
-            }
-            sb.append(player.getName())
-              .append(": ")
-              .append(player.getScore())
-              .append(" pairs   ");
+        // Snapshot matched set before the flip so we can find newly-matched
+        // positions afterwards and only highlight those (green flash).
+        List<Card> before = gameService.getGame().getBoard().getCards();
+        Set<Integer> matchedBefore = new HashSet<>();
+        for (int i = 0; i < before.size(); i++) {
+            if (before.get(i).isMatched()) matchedBefore.add(i);
         }
 
-        sb.append("| Turns: ").append(game.getTotalTurns());
-        statusBar.setText(sb.toString());
-    }
-
-    /**
-     * Shows a modal dialog when the game is finished (requirement #FANF13).
-     *
-     * <p>A Vaadin {@link Dialog} is a modal overlay — the rest of the UI is
-     * blocked until the dialog is closed. We open it programmatically here.</p>
-     */
-    private void showEndDialog(Game game) {
-        Dialog dialog = new Dialog();
-        dialog.setCloseOnOutsideClick(false);
-
-        VerticalLayout content = new VerticalLayout();
-        content.setAlignItems(Alignment.CENTER);
-
-        String headline;
-        if (game.isTie()) {
-            headline = "It's a tie!";
-        } else if (game.winner() != null) {
-            headline = game.getPlayers().size() == 1
-                    ? "You finished!"
-                    : game.winner().getName() + " wins!";
-        } else {
-            headline = "Game over!";
-        }
-
-        content.add(new H2(headline));
-
-        // Show final scores for all players.
-        for (Player player : game.getPlayers()) {
-            content.add(new Paragraph(player.getName() + ": " + player.getScore() + " pairs"));
-        }
-        content.add(new Paragraph("Total turns: " + game.getTotalTurns()));
-
-        Button playAgain = new Button("Play Again", e -> {
-            dialog.close();
-            UI.getCurrent().navigate(StartView.class);
+        FlipResult result = gameService.flip(position, ui, () -> {
+            mismatchedPositions.clear();
+            refreshBoard();
         });
-        playAgain.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
-        content.add(playAgain);
 
-        dialog.add(content);
-        dialog.open();
+        if (result == FlipResult.NO_MATCH) {
+            List<Card> all = gameService.getGame().getBoard().getCards();
+            for (int i = 0; i < all.size(); i++) {
+                if (all.get(i).isFaceUp()) mismatchedPositions.add(i);
+            }
+            refreshBoard();
+        } else if (result == FlipResult.MATCH) {
+            List<Card> after = gameService.getGame().getBoard().getCards();
+            Set<Integer> newlyMatched = new HashSet<>();
+            for (int i = 0; i < after.size(); i++) {
+                if (after.get(i).isMatched() && !matchedBefore.contains(i)) {
+                    newlyMatched.add(i);
+                }
+            }
+            recentlyMatchedPositions.addAll(newlyMatched);
+            refreshBoard();
+
+            matchClearScheduler.schedule(() -> ui.access(() -> {
+                recentlyMatchedPositions.removeAll(newlyMatched);
+                updateCards(gameService.getGame().getBoard().getCards());
+            }), 1500, TimeUnit.MILLISECONDS);
+        } else if (result != FlipResult.INVALID) {
+            refreshBoard();
+        }
+    }
+
+    /** Called from game.js on Space/Enter — flips the keyboard-focused card. */
+    @ClientCallable
+    public void handleKeyboardFlip(int position) {
+        keyboardFocus = position;
+        handleCardClick(position);
+    }
+
+    /** Called from game.js on arrow keys — moves the focus ring without flipping. */
+    @ClientCallable
+    public void setKeyboardFocus(int position) {
+        keyboardFocus = position;
+        updateCards(gameService.getGame().getBoard().getCards());
+    }
+
+    /** Repaints the player/score/moves portion of the status bar; leaves timer + buttons untouched. */
+    private void refreshStatus(Game game) {
+        statusContent.removeAll();
+
+        for (Player player : game.getPlayers()) {
+            boolean isActive = player == game.getActivePlayer() && !game.isFinished();
+
+            if (isActive) {
+                Span arrow = new Span("▶");
+                arrow.addClassName("status-arrow");
+                statusContent.add(arrow);
+            }
+
+            Span playerSpan = new Span(player.getName() + ": " + pairsLabel(player.getScore()));
+            playerSpan.addClassName(isActive ? "player-active" : "player-inactive");
+            statusContent.add(playerSpan);
+        }
+
+        Span moves = new Span("Moves: " + game.getTotalTurns());
+        moves.addClassName("status-moves");
+        statusContent.add(moves);
+    }
+
+    /** Overlay shown when every pair has been matched; also fires the confetti. */
+    private void showEndDialog(Game game) {
+        UI.getCurrent().getPage().executeJs(
+                "window.dhbwMemory.stopTimer();"
+                        + "window.dhbwMemory.showConfetti();");
+        new EndGameDialog(
+                game,
+                gameService.getElapsedSeconds(),
+                this::restartWithSameSettings,
+                () -> UI.getCurrent().navigate(StartView.class)
+        ).open();
+    }
+
+    /** Opens the help dialog with wording adapted to single- vs multi-player. */
+    private void showHelpDialog() {
+        Game game = gameService.getGame();
+        boolean solo = game != null && game.getPlayers().size() == 1;
+        new HelpDialog(solo).open();
+    }
+
+    /** Confirms a mid-game quit, then navigates back to the start view if accepted. */
+    private void showQuitConfirm() {
+        new QuitConfirmDialog(() -> UI.getCurrent().navigate(StartView.class)).open();
+    }
+
+    /**
+     * Rebuilds the current board in place with identical player names, grid
+     * size, and theme — used by the "Same Settings" button on the end dialog.
+     */
+    private void restartWithSameSettings() {
+        Game current = gameService.getGame();
+        List<String> names = current.getPlayers().stream().map(Player::getName).toList();
+        int size = current.getBoard().getSize();
+        Theme currentTheme = gameService.getTheme();
+
+        gameService.startGame(names, size, currentTheme);
+
+        cards.clear();
+        recentlyMatchedPositions.clear();
+        mismatchedPositions.clear();
+        keyboardFocus = 0;
+        animateEntrance = true;
+        refreshBoard();
+    }
+
+    /** "1 pair" vs "N pairs" — keeps the status bar grammatically correct. */
+    private static String pairsLabel(int score) {
+        return score == 1 ? "1 pair" : score + " pairs";
+    }
+
+    /**
+     * Factory for the small Material-Symbols icon buttons in the status bar
+     * (arrow_back, help). The icon name is a Material Symbols ligature.
+     */
+    private Button iconButton(String iconName, String ariaLabel, Runnable onClick) {
+        Span icon = new Span(iconName);
+        icon.addClassName("material-symbols-outlined");
+
+        Button b = new Button(icon);
+        b.addClassName("icon-btn");
+        b.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        b.getElement().setAttribute("aria-label", ariaLabel);
+        b.addClickListener(e -> {
+            // Blur so subsequent Space/Enter doesn't re-trigger this button.
+            b.getElement().executeJs("this.blur();");
+            onClick.run();
+        });
+        return b;
     }
 }

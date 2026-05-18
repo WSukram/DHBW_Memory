@@ -1,0 +1,34 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="hel" cx="40%" cy="35%" r="65%">
+      <stop offset="0%"  stop-color="#FFFFFF"/>
+      <stop offset="75%" stop-color="#CFD8DC"/>
+      <stop offset="100%" stop-color="#78909C"/>
+    </radialGradient>
+    <radialGradient id="vis" cx="30%" cy="30%" r="70%">
+      <stop offset="0%"  stop-color="#64B5F6"/>
+      <stop offset="60%" stop-color="#1565C0"/>
+      <stop offset="100%" stop-color="#0D1B3E"/>
+    </radialGradient>
+  </defs>
+
+  <!-- suit body -->
+  <path d="M30,70 Q30,58 38,56 L62,56 Q70,58 70,70 L70,92 L30,92 Z"
+        fill="url(#hel)" stroke="#546E7A" stroke-width="0.8"/>
+  <!-- chest panel -->
+  <rect x="44" y="64" width="12" height="10" rx="2" fill="#B0BEC5" stroke="#455A64" stroke-width="0.6"/>
+  <circle cx="47" cy="68" r="1.2" fill="#F44336"/>
+  <circle cx="53" cy="68" r="1.2" fill="#4CAF50"/>
+
+  <!-- helmet -->
+  <circle cx="50" cy="38" r="22" fill="url(#hel)" stroke="#546E7A" stroke-width="0.8"/>
+  <!-- visor -->
+  <ellipse cx="50" cy="40" rx="15" ry="13" fill="url(#vis)" stroke="#0D1B3E" stroke-width="0.6"/>
+  <!-- visor highlights -->
+  <ellipse cx="44" cy="34" rx="5" ry="3" fill="#FFFFFF" opacity="0.6"/>
+  <ellipse cx="56" cy="46" rx="2" ry="1.5" fill="#FFFFFF" opacity="0.4"/>
+
+  <!-- antenna -->
+  <line x1="50" y1="16" x2="50" y2="10" stroke="#78909C" stroke-width="1.2"/>
+  <circle cx="50" cy="9" r="1.6" fill="#F44336"/>
+</svg>

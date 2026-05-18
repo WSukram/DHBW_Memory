@@ -1,0 +1,76 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="mtRock" cx="35%" cy="32%" r="75%">
+      <stop offset="0%"  stop-color="#8D6E63"/>
+      <stop offset="55%" stop-color="#4E342E"/>
+      <stop offset="100%" stop-color="#1B0F0A"/>
+    </radialGradient>
+    <linearGradient id="mtTail" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%"   stop-color="#FFEB3B" stop-opacity="0.95"/>
+      <stop offset="35%"  stop-color="#FB8C00" stop-opacity="0.85"/>
+      <stop offset="75%"  stop-color="#E53935" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#E53935" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="mtGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FFF59D" stop-opacity="0.9"/>
+      <stop offset="55%"  stop-color="#FB8C00" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#E53935" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- fiery tail: single tapered shape sweeping from upper-left to the rock -->
+  <path d="M 8,12
+           C 24,20 42,32 58,46
+           L 70,62
+           C 50,48 28,32 12,22 Z"
+        fill="url(#mtTail)"/>
+
+  <!-- inner brighter core of the tail -->
+  <path d="M 18,18
+           C 32,26 48,38 60,50
+           L 66,58
+           C 50,46 32,32 20,24 Z"
+        fill="#FFF176" opacity="0.55"/>
+
+  <!-- heat halo behind the rock -->
+  <circle cx="66" cy="60" r="22" fill="url(#mtGlow)"/>
+
+  <!-- rock body: smoother irregular shape -->
+  <path d="M 56,44
+           C 64,40 76,42 82,50
+           C 88,58 86,70 78,76
+           C 70,82 58,80 52,72
+           C 46,64 48,52 56,44 Z"
+        fill="url(#mtRock)"/>
+
+  <!-- molten leading edge -->
+  <path d="M 56,44
+           C 64,40 76,42 82,50"
+        fill="none" stroke="#FFB300" stroke-width="2"
+        stroke-linecap="round" opacity="0.9"/>
+  <path d="M 58,46
+           C 65,43 75,45 80,51"
+        fill="none" stroke="#FFF176" stroke-width="1"
+        stroke-linecap="round" opacity="0.95"/>
+
+  <!-- craters -->
+  <g>
+    <ellipse cx="66" cy="58" rx="5" ry="4.2" fill="#2E1A12"/>
+    <ellipse cx="66.5" cy="57.4" rx="3.6" ry="2.8" fill="#5D4037"/>
+    <ellipse cx="65.3" cy="56.6" rx="1.1" ry="0.8" fill="#A1887F" opacity="0.8"/>
+  </g>
+  <g>
+    <circle cx="76" cy="66" r="3" fill="#2E1A12"/>
+    <circle cx="76.4" cy="65.6" r="2" fill="#5D4037"/>
+  </g>
+  <g>
+    <circle cx="60" cy="70" r="2.2" fill="#2E1A12"/>
+    <circle cx="60.3" cy="69.7" r="1.4" fill="#5D4037"/>
+  </g>
+
+  <!-- sparks trailing off -->
+  <circle cx="36" cy="36" r="1.1" fill="#FFD54F"/>
+  <circle cx="28" cy="44" r="0.9" fill="#FB8C00"/>
+  <circle cx="44" cy="28" r="0.8" fill="#FFEB3B"/>
+  <circle cx="22" cy="32" r="0.7" fill="#FF7043"/>
+</svg>

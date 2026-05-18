@@ -1,0 +1,29 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ep" cx="35%" cy="35%" r="70%">
+      <stop offset="0%"  stop-color="#64B5F6"/>
+      <stop offset="60%" stop-color="#1565C0"/>
+      <stop offset="100%" stop-color="#0A2E52"/>
+    </radialGradient>
+    <clipPath id="epc"><circle cx="50" cy="50" r="32"/></clipPath>
+  </defs>
+
+  <!-- ocean -->
+  <circle cx="50" cy="50" r="32" fill="url(#ep)"/>
+
+  <g clip-path="url(#epc)">
+    <!-- africa-ish continent -->
+    <path d="M 46,32 Q 56,30 60,38 Q 62,46 58,54 Q 56,62 50,66 Q 42,62 40,52 Q 42,40 46,32 Z"
+          fill="#2E7D32"/>
+    <!-- secondary landmass -->
+    <path d="M 28,42 Q 38,40 40,46 Q 38,52 32,54 Q 26,52 28,42 Z"
+          fill="#2E7D32"/>
+    <!-- island -->
+    <ellipse cx="64" cy="58" rx="5" ry="3" fill="#388E3C" transform="rotate(20,64,58)"/>
+    <!-- highlight green tints -->
+    <path d="M 48,36 Q 54,36 56,42 Q 54,46 50,44 Q 46,42 48,36 Z" fill="#43A047" opacity="0.6"/>
+    <!-- clouds -->
+    <ellipse cx="36" cy="32" rx="8" ry="2.5" fill="#FFFFFF" opacity="0.8" transform="rotate(-15,36,32)"/>
+    <ellipse cx="58" cy="68" rx="6" ry="2"   fill="#FFFFFF" opacity="0.7" transform="rotate(10,58,68)"/>
+  </g>
+</svg>

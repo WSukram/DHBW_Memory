@@ -1,0 +1,31 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="sp" cx="35%" cy="35%" r="70%">
+      <stop offset="0%"  stop-color="#FFE082"/>
+      <stop offset="60%" stop-color="#D4A85A"/>
+      <stop offset="100%" stop-color="#7B5E2E"/>
+    </radialGradient>
+    <linearGradient id="srg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#8D6E2C" stop-opacity="0.2"/>
+      <stop offset="40%"  stop-color="#B8862A" stop-opacity="1"/>
+      <stop offset="60%"  stop-color="#B8862A" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#8D6E2C" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- back half of ring -->
+  <path d="M 8,52 A 42,11 0 0 1 92,52" fill="none" stroke="url(#srg)" stroke-width="4"/>
+  <ellipse cx="50" cy="52" rx="40" ry="9" fill="none"
+           stroke="#A07A28" stroke-width="1.5" stroke-dasharray="2 1" opacity="0.5"/>
+
+  <!-- planet -->
+  <circle cx="50" cy="50" r="22" fill="url(#sp)"/>
+
+  <!-- bands -->
+  <ellipse cx="50" cy="44" rx="22" ry="3" fill="#A8843B" opacity="0.5"/>
+  <ellipse cx="50" cy="54" rx="22" ry="2" fill="#A8843B" opacity="0.4"/>
+
+  <!-- front half of ring -->
+  <path d="M 12,55 A 42,11 0 0 0 88,55" fill="none" stroke="url(#srg)" stroke-width="6"/>
+  <path d="M 16,57 A 38,9 0 0 0 84,57" fill="none" stroke="#FFE082" stroke-width="1" opacity="0.85"/>
+</svg>

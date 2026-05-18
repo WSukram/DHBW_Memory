@@ -1,0 +1,6 @@
+de.dhbw.memory
+de.dhbw.memory.controller
+de.dhbw.memory.model
+de.dhbw.memory.view
+de.dhbw.memory.view.component
+de.dhbw.memory.view.dialog

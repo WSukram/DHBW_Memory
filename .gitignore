@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 .kotlin
 javadoc.zip
+abgabe/
 
 ### Spring Boot ###
 HELP.md

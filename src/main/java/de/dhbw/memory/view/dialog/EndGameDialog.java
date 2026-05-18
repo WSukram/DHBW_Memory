@@ -1,19 +1,22 @@
 package de.dhbw.memory.view.dialog;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.html.Span;
 import de.dhbw.memory.model.Game;
 import de.dhbw.memory.model.Player;
 
 /**
  * End-of-game overlay: winner / tie headline, per-player stats, elapsed time,
- * and two restart options. Cannot be dismissed by clicking outside so the
- * user actively chooses how to continue.
+ * and two restart options.
+ *
+ * <p>Cannot be dismissed by clicking outside (the user actively chooses how to
+ * continue). Shares the {@code theme="dhbw"} overlay treatment with the other
+ * dialogs and adds a {@code .stats-panel} block for per-player rows plus a
+ * {@code .stats-footer} for time + total moves. The headline uses the brand
+ * gradient via {@code .dialog-title-gradient} to echo the start screen.</p>
  *
  * @author Markus Wenninger
  */
@@ -32,41 +35,81 @@ public class EndGameDialog extends Dialog {
                          Runnable onSameSettings,
                          Runnable onNewSetup) {
         setCloseOnOutsideClick(false);
+        getElement().getThemeList().add("dhbw");
+        setWidth("440px");
 
-        VerticalLayout content = new VerticalLayout();
-        content.setAlignItems(VerticalLayout.Alignment.CENTER);
+        Span iconSym = new Span("emoji_events");
+        iconSym.addClassName("material-symbols-outlined");
+        Div iconBadge = new Div(iconSym);
+        iconBadge.addClassNames("dialog-icon", "dialog-icon-trophy");
 
-        content.add(new H2(headline(game)));
+        H2 title = new H2(headline(game));
+        title.addClassNames("dialog-title", "dialog-title-gradient");
 
-        boolean solo = game.getPlayers().size() == 1;
+        Div stats = new Div();
+        stats.addClassName("stats-panel");
+
+        Player winner = game.winner();
+        boolean multi = game.getPlayers().size() > 1;
         for (Player player : game.getPlayers()) {
-            int accuracy = player.getTurns() > 0
-                    ? (player.getScore() * 100 / player.getTurns())
-                    : 0;
-            String pairs = pairsLabel(player.getScore());
-            String label = solo
-                    ? pairs + "  ·  " + accuracy + "% accuracy"
-                    : player.getName() + ": " + pairs + "  ·  " + accuracy + "% accuracy";
-            content.add(new Paragraph(label));
+            stats.add(statsRow(player, winner, multi));
         }
 
-        content.add(new Paragraph("Time: " + formatTime(elapsedSeconds)
-                + "  ·  " + movesLabel(game.getTotalTurns())));
+        Div footer = new Div();
+        footer.addClassName("stats-footer");
+        footer.add(footerItem("schedule", formatTime(elapsedSeconds)));
+        footer.add(footerItem("touch_app", movesLabel(game.getTotalTurns())));
 
         Button sameSettings = new Button("Same Settings", e -> {
             close();
             onSameSettings.run();
         });
-        sameSettings.addThemeVariants(ButtonVariant.LUMO_LARGE);
+        sameSettings.addClassName("btn-ghost");
 
         Button newSetup = new Button("New Setup", e -> {
             close();
             onNewSetup.run();
         });
-        newSetup.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
+        newSetup.addClassName("btn-gradient");
 
-        content.add(new HorizontalLayout(sameSettings, newSetup));
-        add(content);
+        Div actions = new Div(sameSettings, newSetup);
+        actions.addClassName("dialog-actions");
+
+        Div root = new Div(iconBadge, title, stats, footer, actions);
+        root.addClassName("dhbw-dialog");
+        add(root);
+    }
+
+    private static Div statsRow(Player player, Player winner, boolean multi) {
+        int accuracy = player.getTurns() > 0
+                ? (player.getScore() * 100 / player.getTurns())
+                : 0;
+
+        Span name = new Span(player.getName());
+        name.addClassName("stats-name");
+        Div left = new Div(name);
+        if (multi && winner == player) {
+            Span pill = new Span("Winner");
+            pill.addClassName("winner-pill");
+            left.add(pill);
+        }
+
+        Span meta = new Span(pairsLabel(player.getScore()) + " · " + accuracy + "% accuracy");
+        meta.addClassName("stats-meta");
+        Div right = new Div(meta);
+
+        Div row = new Div(left, right);
+        row.addClassName("stats-row");
+        return row;
+    }
+
+    private static Div footerItem(String iconName, String text) {
+        Span sym = new Span(iconName);
+        sym.addClassName("material-symbols-outlined");
+        Span body = new Span(text);
+        Div item = new Div(sym, body);
+        item.addClassName("stats-footer-item");
+        return item;
     }
 
     private static String headline(Game game) {

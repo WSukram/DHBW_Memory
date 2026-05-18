@@ -338,9 +338,254 @@
     margin-left: 8px;
 }
 
-.help-keys {
+/* ──────────────────────────────────────────────────────────────────────────
+   Dialog system
+   - Opt-in via getElement().getThemeList().add("dhbw") on the Dialog.
+   - Vaadin propagates the theme attribute onto <vaadin-dialog-overlay>, so
+     we can rewrite ::part(backdrop) / ::part(overlay) / ::part(content) from
+     this global stylesheet without touching Lumo defaults elsewhere.
+   - All three dialogs (QuitConfirm, Help, EndGame) share .dhbw-dialog layout,
+     .dialog-icon badge, .dialog-title, .dialog-actions button row.
+   ────────────────────────────────────────────────────────────────────────── */
+vaadin-dialog-overlay[theme~="dhbw"]::part(overlay) {
+    background: var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    border-radius: 18px;
+    box-shadow: var(--shadow-glass);
+    padding: 0;
+    overflow: hidden;
+}
+
+vaadin-dialog-overlay[theme~="dhbw"]::part(backdrop) {
+    background: rgba(5, 8, 16, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
+    padding: 28px 28px 24px;
+    background: transparent;
+}
+
+.dhbw-dialog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Round icon badge above the title. The colour variants tint the same shell
+   so a destructive dialog reads red, info reads purple, win reads gold. */
+.dialog-icon {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(134, 59, 255, 0.16);
+    border: 1px solid rgba(134, 59, 255, 0.40);
+    color: #c3c0ff;
+    margin-top: 2px;
+}
+
+.dialog-icon .material-symbols-outlined {
+    font-size: 26px;
+}
+
+.dialog-icon-warning {
+    background: rgba(255, 82, 82, 0.14);
+    border-color: rgba(255, 82, 82, 0.45);
+    color: #ffb4ab;
+}
+
+.dialog-icon-trophy {
+    background: linear-gradient(135deg, rgba(134, 59, 255, 0.20), rgba(71, 191, 255, 0.20));
+    border-color: rgba(195, 192, 255, 0.50);
+    color: #ffd76b;
+}
+
+.dialog-title {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.dialog-title-gradient {
+    background: linear-gradient(90deg, var(--brand-purple), var(--brand-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.dialog-body {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Help dialog: rules list — leading icon + wrapping body text. */
+.dialog-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    margin-top: 2px;
+}
+
+.dialog-rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.dialog-rule > .material-symbols-outlined {
+    color: var(--brand-purple);
+    font-size: 18px;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+/* Keyboard-key chip. inline-flex + vertical-align keeps the chips on the
+   text baseline so prose like "flip with [Space]" reads naturally. */
+.kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    margin: 0 1px;
+    background: var(--surface-container-high);
+    border: 1px solid var(--outline-variant);
+    border-radius: 5px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+    font-family: 'JetBrains Mono', 'Menlo', monospace;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1;
+    vertical-align: -4px;
+}
+
+/* End-game dialog: per-player stats panel. */
+.stats-panel {
+    width: 100%;
+    background: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.stats-row > div {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stats-name {
+    font-weight: 600;
+}
+
+.stats-meta {
     color: var(--text-muted);
     font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.winner-pill {
+    background: rgba(134, 59, 255, 0.18);
+    border: 1px solid rgba(134, 59, 255, 0.55);
+    color: var(--text-primary);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.stats-footer {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.stats-footer-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stats-footer .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--text-dim);
+}
+
+/* Action button row at the bottom of every dialog. */
+.dialog-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.dialog-actions vaadin-button {
+    min-width: 130px;
+}
+
+/* ── Shared button variants used by dialogs ────────────────────────────── */
+/* !important is needed to beat Lumo's own button background/border. */
+.btn-ghost {
+    background: transparent !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--outline-variant) !important;
+    font-weight: 600 !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.btn-ghost:hover {
+    background: var(--surface-container-high) !important;
+    color: var(--text-primary) !important;
+}
+
+.btn-danger {
+    background: #ef4444 !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    transition: background 0.15s ease, transform 0.15s ease !important;
+}
+
+.btn-danger:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px);
 }
 
 /* ── Status-bar icon buttons (arrow_back, help) ────────────────────────── */

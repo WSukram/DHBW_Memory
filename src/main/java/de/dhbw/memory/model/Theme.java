@@ -24,6 +24,13 @@ public enum Theme {
             "rocket", "astronaut", "moon", "saturn", "blackhole", "galaxy", "sun", "mars",
             // 6×6 extras
             "earth", "jupiter", "mercury", "venus", "uranus", "neptune", "comet", "nebula", "satellite", "meteor"
+    )),
+
+    LANGUAGES("languages", List.of(
+            // 4×4 core — the eight most ubiquitous languages a student encounters
+            "java", "python", "javascript", "c", "html5", "sql", "typescript", "assembly",
+            // 6×6 extras
+            "rust", "go", "swift", "kotlin", "ruby", "csharp", "php", "bash", "cpp", "css3"
     ));
 
     private final String folder;
@@ -71,6 +78,7 @@ public enum Theme {
         Map<String, String> table = switch (this) {
             case CRYPTO -> CRYPTO_DISPLAY_NAMES;
             case SPACE -> SPACE_DISPLAY_NAMES;
+            case LANGUAGES -> LANGUAGE_DISPLAY_NAMES;
         };
         return table.getOrDefault(motif, motif);
     }
@@ -115,5 +123,26 @@ public enum Theme {
             Map.entry("nebula",    "Nebula"),
             Map.entry("satellite", "Satellite"),
             Map.entry("meteor",    "Meteor")
+    );
+
+    private static final Map<String, String> LANGUAGE_DISPLAY_NAMES = Map.ofEntries(
+            Map.entry("java",       "Java"),
+            Map.entry("python",     "Python"),
+            Map.entry("javascript", "JavaScript"),
+            Map.entry("c",          "C"),
+            Map.entry("html5",      "HTML5"),
+            Map.entry("sql",        "SQL"),
+            Map.entry("typescript", "TypeScript"),
+            Map.entry("assembly",   "Assembly"),
+            Map.entry("rust",       "Rust"),
+            Map.entry("go",         "Go"),
+            Map.entry("swift",      "Swift"),
+            Map.entry("kotlin",     "Kotlin"),
+            Map.entry("ruby",       "Ruby"),
+            Map.entry("csharp",     "C#"),
+            Map.entry("php",        "PHP"),
+            Map.entry("bash",       "Bash"),
+            Map.entry("cpp",        "C++"),
+            Map.entry("css3",       "CSS3")
     );
 }

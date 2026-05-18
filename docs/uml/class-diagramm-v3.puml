@@ -1,0 +1,264 @@
+@startuml
+title DHBW Memory — Class Diagram (v3)\nModel · Controller · View — Spring Boot + Vaadin
+
+' ---------- skinparams ----------
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam packageStyle rectangle
+skinparam dpi 140
+skinparam defaultFontName "Inter, Helvetica"
+skinparam nodesep 55
+skinparam ranksep 70
+
+skinparam ArrowColor #555555
+skinparam ArrowFontColor #555555
+skinparam ArrowFontSize 11
+
+skinparam ClassBorderThickness 1.2
+skinparam ClassFontStyle bold
+skinparam ClassStereotypeFontSize 11
+
+skinparam PackageBorderColor #999999
+skinparam PackageBackgroundColor #FFFFFF
+skinparam PackageFontStyle bold
+skinparam PackageFontColor #333333
+
+' Per-stereotype colour palette (one hue per architectural layer)
+skinparam class {
+  BackgroundColor<<entity>>       #E8F1FB
+  BorderColor<<entity>>           #2F6FB0
+  BackgroundColor<<enumeration>>  #FFF3D6
+  BorderColor<<enumeration>>      #B8860B
+  BackgroundColor<<service>>      #FFE7D6
+  BorderColor<<service>>          #C2683A
+  BackgroundColor<<route>>        #F1E4FB
+  BorderColor<<route>>            #7E3FAE
+  BackgroundColor<<component>>    #EFE4FB
+  BorderColor<<component>>        #6A2EAE
+  BackgroundColor<<dialog>>       #FBE4F3
+  BorderColor<<dialog>>           #AE2E83
+  BackgroundColor<<app>>          #E8F8E8
+  BorderColor<<app>>              #2F8F3F
+  BackgroundColor<<framework>>    #F2F2F2
+  BorderColor<<framework>>        #888888
+}
+
+hide empty members
+
+' ===========================================================
+' APPLICATION ENTRY POINT
+' ===========================================================
+package "de.dhbw.memory" as PApp <<Frame>> {
+  class MemoryApplication <<app>> {
+    .. implements AppShellConfigurator ..
+    + {static} main(args : String[])
+    + configurePage(settings : AppShellSettings)
+  }
+}
+
+' ===========================================================
+' VIEW LAYER (Vaadin)
+' ===========================================================
+package "de.dhbw.memory.view" as PView <<Frame>> {
+  together {
+    class StartView <<route>> {
+      .. extends VerticalLayout ..
+      + StartView(gameService : GameService)
+      + onThemeSync(pref : String)
+    }
+    class GameView <<route>> {
+      .. extends VerticalLayout ..
+      .. implements BeforeEnterObserver ..
+      + GameView(gameService : GameService)
+      + beforeEnter(event : BeforeEnterEvent)
+      + handleKeyboardFlip(position : int)
+      + setKeyboardFocus(position : int)
+    }
+  }
+}
+
+package "de.dhbw.memory.view.component" as PComp <<Frame>> {
+  class MemoryCard <<component>> {
+    .. extends Div ..
+    + MemoryCard(position : int, theme : Theme, motif : String, onClick : IntConsumer)
+    + playEntranceAnimation()
+    + applyState(card : Card, recentlyMatched : boolean, mismatched : boolean, waiting : boolean, focused : boolean)
+  }
+  class "SegmentedControl<T>" as SegmentedControl <<component>> {
+    .. extends Div ..
+    + SegmentedControl()
+    + withVariant(cssClass : String) : SegmentedControl<T>
+    + setItems(items : T...)
+    + setRenderer(renderer : SerializableFunction<T,Component>)
+    + setValue(value : T)
+    + getValue() : T
+    + addValueChangeListener(listener : SerializableConsumer<T>)
+  }
+}
+
+package "de.dhbw.memory.view.dialog" as PDialog <<Frame>> {
+  class HelpDialog <<dialog>> {
+    .. extends Dialog ..
+    + HelpDialog(singlePlayer : boolean)
+  }
+  class QuitConfirmDialog <<dialog>> {
+    .. extends Dialog ..
+    + QuitConfirmDialog(onConfirm : Runnable)
+  }
+  class EndGameDialog <<dialog>> {
+    .. extends Dialog ..
+    + EndGameDialog(game : Game, elapsedSeconds : long, onSameSettings : Runnable, onNewSetup : Runnable)
+  }
+}
+
+' ===========================================================
+' CONTROLLER LAYER
+' ===========================================================
+package "de.dhbw.memory.controller" as PCtrl <<Frame>> {
+  class GameService <<service>> {
+    + startGame(playerNames : List<String>, gridSize : int, theme : Theme)
+    + flip(position : int, ui : UI, afterReset : Runnable) : FlipResult
+    + getGame() : Game
+    + getTheme() : Theme
+    + getElapsedSeconds() : long
+    + isWaitingForFlipBack() : boolean
+    + shutdown()
+  }
+}
+
+' ===========================================================
+' MODEL LAYER (pure Java — no Spring, no Vaadin)
+' ===========================================================
+package "de.dhbw.memory.model" as PModel <<Frame>> {
+
+  together {
+    class Game <<entity>> {
+      + Game(players : List<Player>, board : Board)
+      + flip(position : int) : FlipResult
+      + resetMismatch()
+      + isFinished() : boolean
+      + winner() : Player
+      + isTie() : boolean
+      + getActivePlayer() : Player
+      + getTotalTurns() : int
+      + getPlayers() : List<Player>
+      + getBoard() : Board
+    }
+
+    class Board <<entity>> {
+      + Board(size : int, theme : Theme)
+      + shuffle(seed : long)
+      + getCards() : List<Card>
+      + getCardAt(position : int) : Card
+      + getSize() : int
+    }
+  }
+
+  together {
+    class Card <<entity>> {
+      + Card(id : int, motif : String)
+      + getId() : int
+      + getMotif() : String
+      + isFaceUp() : boolean
+      + isMatched() : boolean
+      + flip()
+      + setMatched(matched : boolean)
+    }
+
+    class Player <<entity>> {
+      + Player(name : String)
+      + getName() : String
+      + getScore() : int
+      + addPoint()
+      + addTurn()
+      + getTurns() : int
+    }
+  }
+
+  together {
+    enum Theme <<enumeration>> {
+      CRYPTO
+      LANGUAGES
+      SPACE
+      --
+      + getFolder() : String
+      + getMotifsFor(gridSize : int) : List<String>
+      + getDisplayName(motif : String) : String
+    }
+
+    enum FlipResult <<enumeration>> {
+      FIRST_FLIP
+      MATCH
+      NO_MATCH
+      INVALID
+    }
+  }
+}
+
+' ===========================================================
+' DOMAIN RELATIONSHIPS
+' ===========================================================
+
+' Model internal
+Game  "1" *-- "1..2"    Player : players
+Game  "1" *-- "1"       Board  : board
+Board "1" *-- "16..36"  Card   : cards
+Board ..> Theme         : uses
+Game  ..> FlipResult    : returns
+
+' Controller → Model
+GameService "1" o-- "0..1" Game : owns
+GameService ..> Board       : creates
+GameService ..> Theme       : reads
+GameService ..> FlipResult  : forwards
+
+' View → Controller (only direction views talk to model)
+StartView ..> GameService : starts game
+GameView  ..> GameService : flips / reads state
+
+' View composition
+GameView "1" *-- "16..36" MemoryCard : grid cells
+GameView ..> HelpDialog
+GameView ..> QuitConfirmDialog
+GameView ..> EndGameDialog
+StartView ..> SegmentedControl
+
+' View → Model (read-only)
+StartView     ..> Theme
+MemoryCard    ..> Card   : renders
+MemoryCard    ..> Theme  : motif folder
+EndGameDialog ..> Game
+EndGameDialog ..> Player
+
+' App entry point wires Spring + Vaadin discovery
+MemoryApplication ..> StartView   : @Route scan
+MemoryApplication ..> GameView    : @Route scan
+MemoryApplication ..> GameService : component scan
+
+' ===========================================================
+' LAYOUT HINTS — pin layering top→bottom
+' ===========================================================
+PApp    -[hidden]down- PView
+PView   -[hidden]down- PCtrl
+PCtrl   -[hidden]down- PModel
+PView   -[hidden]right- PComp
+PComp   -[hidden]right- PDialog
+
+legend right
+  | Colour | Layer |
+  | <#E8F1FB> | Model entity (pure Java) |
+  | <#FFF3D6> | Enumeration |
+  | <#FFE7D6> | Controller — Spring @Service |
+  | <#F1E4FB> | Vaadin @Route view |
+  | <#EFE4FB> | Reusable Vaadin component |
+  | <#FBE4F3> | Vaadin modal dialog |
+  | <#E8F8E8> | Application entry point |
+  |  |  |
+  | Arrow | Meaning |
+  | ◇──   | Aggregation (controller owns model) |
+  | ◆──   | Composition (lifecycle-coupled) |
+  | ··▶   | Dependency / "uses" |
+endlegend
+
+@enduml

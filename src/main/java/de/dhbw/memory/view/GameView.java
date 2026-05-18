@@ -95,6 +95,11 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         addDetachListener(e -> matchClearScheduler.shutdownNow());
     }
 
+    /**
+     * Vaadin lifecycle hook fired before this view is rendered. If no game is in progress
+     * (e.g. the user typed {@code /game} directly), it redirects to {@link StartView};
+     * otherwise it resets transient highlight state and renders the board.
+     */
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (gameService.getGame() == null) {

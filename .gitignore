@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+javadoc.zip
 
 ### Spring Boot ###
 HELP.md

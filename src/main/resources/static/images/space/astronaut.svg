@@ -1,0 +1,44 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#1a2847"/>
+      <stop offset="100%" stop-color="#050912"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" rx="10" fill="url(#bg)"/>
+  <!-- faint stars -->
+  <circle cx="14" cy="16" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="86" cy="22" r="0.6" fill="white" opacity="0.5"/>
+  <circle cx="10" cy="78" r="0.7" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="88" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="78" cy="12" r="0.5" fill="white" opacity="0.4"/>
+  <circle cx="22" cy="90" r="0.5" fill="white" opacity="0.4"/>
+  <defs>
+    <radialGradient id="hel" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="white"/>
+      <stop offset="80%" stop-color="#e0e0e0"/>
+      <stop offset="100%" stop-color="#9e9e9e"/>
+    </radialGradient>
+    <radialGradient id="vis" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#64b5f6"/>
+      <stop offset="60%" stop-color="#1565c0"/>
+      <stop offset="100%" stop-color="#0d1b3e"/>
+    </radialGradient>
+  </defs>
+  <!-- suit body -->
+  <path d="M30,70 Q30,58 38,56 L62,56 Q70,58 70,70 L70,92 L30,92 Z" fill="url(#hel)"/>
+  <!-- chest panel -->
+  <rect x="44" y="64" width="12" height="10" rx="2" fill="#bdbdbd" stroke="#757575" stroke-width="0.5"/>
+  <circle cx="47" cy="68" r="1.2" fill="#f44336"/>
+  <circle cx="53" cy="68" r="1.2" fill="#4caf50"/>
+  <!-- helmet -->
+  <circle cx="50" cy="38" r="22" fill="url(#hel)"/>
+  <!-- visor -->
+  <ellipse cx="50" cy="40" rx="15" ry="13" fill="url(#vis)"/>
+  <!-- visor highlight -->
+  <ellipse cx="44" cy="34" rx="5" ry="3" fill="white" opacity="0.5"/>
+  <ellipse cx="56" cy="46" rx="2" ry="1.5" fill="white" opacity="0.3"/>
+  <!-- antenna -->
+  <line x1="50" y1="16" x2="50" y2="10" stroke="#9e9e9e" stroke-width="1"/>
+  <circle cx="50" cy="9" r="1.5" fill="#f44336"/>
+</svg>

@@ -1,0 +1,102 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#1a2847"/>
+      <stop offset="100%" stop-color="#050912"/>
+    </radialGradient>
+    <linearGradient id="sp1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#42A5F5"/>
+      <stop offset="50%"  stop-color="#1565C0"/>
+      <stop offset="100%" stop-color="#0D47A1"/>
+    </linearGradient>
+    <linearGradient id="sb" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FAFAFA"/>
+      <stop offset="55%"  stop-color="#B0BEC5"/>
+      <stop offset="100%" stop-color="#546E7A"/>
+    </linearGradient>
+    <linearGradient id="foil" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FFD54F"/>
+      <stop offset="100%" stop-color="#FF8F00"/>
+    </linearGradient>
+    <radialGradient id="dish" cx="50%" cy="40%" r="60%">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="60%"  stop-color="#CFD8DC"/>
+      <stop offset="100%" stop-color="#455A64"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" fill="url(#bg)"/>
+  <!-- faint stars -->
+  <circle cx="14" cy="16" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="86" cy="22" r="0.6" fill="white" opacity="0.5"/>
+  <circle cx="10" cy="78" r="0.7" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="88" r="0.8" fill="white" opacity="0.7"/>
+  <circle cx="78" cy="12" r="0.5" fill="white" opacity="0.4"/>
+  <circle cx="22" cy="90" r="0.5" fill="white" opacity="0.4"/>
+
+  <!-- soft earthlight glow -->
+  <circle cx="50" cy="54" r="36" fill="#1976D2" opacity="0.05"/>
+
+  <!-- support booms to solar panels -->
+  <line x1="36" y1="54" x2="22" y2="54" stroke="#90A4AE" stroke-width="1.2"/>
+  <line x1="64" y1="54" x2="78" y2="54" stroke="#90A4AE" stroke-width="1.2"/>
+
+  <!-- left solar panel (with slight perspective: trapezoid) -->
+  <g>
+    <polygon points="4,40 22,42 22,66 4,68" fill="url(#sp1)" stroke="#0D47A1" stroke-width="0.8"/>
+    <g stroke="#64B5F6" stroke-width="0.5" opacity="0.85">
+      <line x1="4" y1="54" x2="22" y2="54"/>
+      <line x1="10" y1="40.5" x2="10" y2="67.2"/>
+      <line x1="16" y1="41.2" x2="16" y2="66.5"/>
+    </g>
+    <!-- shine -->
+    <polygon points="4,40 10,40.5 10,67.2 4,68" fill="#FFFFFF" opacity="0.08"/>
+  </g>
+
+  <!-- right solar panel -->
+  <g>
+    <polygon points="78,42 96,40 96,68 78,66" fill="url(#sp1)" stroke="#0D47A1" stroke-width="0.8"/>
+    <g stroke="#64B5F6" stroke-width="0.5" opacity="0.85">
+      <line x1="78" y1="54" x2="96" y2="54"/>
+      <line x1="84" y1="41.2" x2="84" y2="66.5"/>
+      <line x1="90" y1="40.5" x2="90" y2="67.2"/>
+    </g>
+    <polygon points="90,40.5 96,40 96,68 90,67.2" fill="#FFFFFF" opacity="0.08"/>
+  </g>
+
+  <!-- body: main chassis -->
+  <rect x="38" y="42" width="24" height="24" rx="3" fill="url(#sb)" stroke="#37474F" stroke-width="1"/>
+  <!-- gold thermal-blanket band -->
+  <rect x="38" y="58" width="24" height="8" rx="1" fill="url(#foil)" opacity="0.9"/>
+  <g stroke="#E65100" stroke-width="0.3" opacity="0.7">
+    <line x1="42" y1="58" x2="42" y2="66"/>
+    <line x1="46" y1="58" x2="46" y2="66"/>
+    <line x1="50" y1="58" x2="50" y2="66"/>
+    <line x1="54" y1="58" x2="54" y2="66"/>
+    <line x1="58" y1="58" x2="58" y2="66"/>
+  </g>
+  <!-- window/sensor -->
+  <rect x="42" y="46" width="7" height="6" rx="0.8" fill="#0D47A1" stroke="#90CAF9" stroke-width="0.4"/>
+  <rect x="43" y="47" width="2.5" height="1.5" fill="#90CAF9" opacity="0.7"/>
+  <!-- side thruster -->
+  <rect x="51" y="46" width="7" height="6" rx="0.8" fill="#263238" stroke="#90A4AE" stroke-width="0.4"/>
+  <circle cx="54.5" cy="49" r="1.6" fill="#FF7043"/>
+  <circle cx="54.5" cy="49" r="0.7" fill="#FFEB3B"/>
+
+  <!-- dish parabola -->
+  <g>
+    <!-- support mast -->
+    <line x1="50" y1="42" x2="50" y2="32" stroke="#B0BEC5" stroke-width="1.4"/>
+    <!-- dish bowl (filled ellipse) -->
+    <ellipse cx="50" cy="24" rx="13" ry="6" fill="url(#dish)" stroke="#455A64" stroke-width="0.8"/>
+    <!-- inner shadow -->
+    <ellipse cx="50" cy="25" rx="9" ry="3.5" fill="#263238" opacity="0.35"/>
+    <!-- feed horn -->
+    <line x1="50" y1="24" x2="50" y2="14" stroke="#CFD8DC" stroke-width="1"/>
+    <circle cx="50" cy="14" r="1.6" fill="#ECEFF1" stroke="#37474F" stroke-width="0.4"/>
+  </g>
+
+  <!-- bottom antenna with blinking lamp -->
+  <line x1="50" y1="66" x2="50" y2="76" stroke="#CFD8DC" stroke-width="1"/>
+  <circle cx="50" cy="77.5" r="1.8" fill="#F44336"/>
+  <circle cx="50" cy="77.5" r="3.5" fill="#F44336" opacity="0.25"/>
+</svg>

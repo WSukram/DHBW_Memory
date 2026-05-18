@@ -24,6 +24,13 @@ public enum Theme {
             "java", "python", "javascript", "c", "html5", "sql", "typescript", "assembly",
             // 6×6 extras
             "rust", "go", "swift", "kotlin", "ruby", "csharp", "php", "bash", "cpp", "css3"
+    )),
+
+    SPACE("space", List.of(
+            // 4×4 core
+            "rocket", "astronaut", "moon", "saturn", "blackhole", "galaxy", "sun", "mars",
+            // 6×6 extras
+            "earth", "jupiter", "mercury", "venus", "uranus", "neptune", "comet", "nebula", "satellite", "meteor"
     ));
 
     private final String folder;
@@ -71,6 +78,7 @@ public enum Theme {
         Map<String, String> table = switch (this) {
             case CRYPTO -> CRYPTO_DISPLAY_NAMES;
             case LANGUAGES -> LANGUAGE_DISPLAY_NAMES;
+            case SPACE -> SPACE_DISPLAY_NAMES;
         };
         return table.getOrDefault(motif, motif);
     }
@@ -96,7 +104,7 @@ public enum Theme {
             Map.entry("fet",   "Fetch.ai")
     );
 
-private static final Map<String, String> LANGUAGE_DISPLAY_NAMES = Map.ofEntries(
+    private static final Map<String, String> LANGUAGE_DISPLAY_NAMES = Map.ofEntries(
             Map.entry("java",       "Java"),
             Map.entry("python",     "Python"),
             Map.entry("javascript", "JavaScript"),
@@ -115,5 +123,26 @@ private static final Map<String, String> LANGUAGE_DISPLAY_NAMES = Map.ofEntries(
             Map.entry("bash",       "Bash"),
             Map.entry("cpp",        "C++"),
             Map.entry("css3",       "CSS3")
+    );
+
+    private static final Map<String, String> SPACE_DISPLAY_NAMES = Map.ofEntries(
+            Map.entry("rocket",    "Rocket"),
+            Map.entry("astronaut", "Astronaut"),
+            Map.entry("moon",      "Moon"),
+            Map.entry("saturn",    "Saturn"),
+            Map.entry("blackhole", "Black Hole"),
+            Map.entry("galaxy",    "Galaxy"),
+            Map.entry("sun",       "Sun"),
+            Map.entry("mars",      "Mars"),
+            Map.entry("earth",     "Earth"),
+            Map.entry("jupiter",   "Jupiter"),
+            Map.entry("mercury",   "Mercury"),
+            Map.entry("venus",     "Venus"),
+            Map.entry("uranus",    "Uranus"),
+            Map.entry("neptune",   "Neptune"),
+            Map.entry("comet",     "Comet"),
+            Map.entry("nebula",    "Nebula"),
+            Map.entry("satellite", "Satellite"),
+            Map.entry("meteor",    "Meteor")
     );
 }

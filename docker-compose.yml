@@ -1,0 +1,6 @@
+services:
+  memory:
+    image: ghcr.io/wsukram/dhbw-memory:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8080"

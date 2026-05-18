@@ -24,13 +24,18 @@ window.dhbwMemory = (function () {
             const s = Math.floor((Date.now() - start) / 1000);
             const m = Math.floor(s / 60);
             const ss = s % 60;
-            el.textContent = m + ':' + (ss < 10 ? '0' : '') + ss;
+            const timeStr = m + ':' + (ss < 10 ? '0' : '') + ss;
+            el.textContent = timeStr;
+            // Also surface the live time in the browser tab so it's glanceable
+            // while the user is in another window.
+            document.title = 'DHBW Memory · ' + timeStr;
         }, 500);
     }
 
-    /** Stops the live timer if any (called when the end-of-game dialog opens). */
+    /** Stops the live timer if any and restores the plain tab title. */
     function stopTimer() {
         if (window._gameTimer) clearInterval(window._gameTimer);
+        document.title = 'DHBW Memory';
     }
 
     /**
@@ -51,6 +56,16 @@ window.dhbwMemory = (function () {
         const total = size * size;
         let focus = 0;
         if (window._keyListener) document.removeEventListener('keydown', window._keyListener);
+        if (window._mouseListener) document.removeEventListener('mousedown', window._mouseListener);
+
+        // The focus ring is only drawn while body.keyboard-mode is on.
+        // We enter that mode on the first board-relevant key press and leave
+        // it the moment the user clicks anything with the mouse.
+        window._mouseListener = function () {
+            document.body.classList.remove('keyboard-mode');
+        };
+        document.addEventListener('mousedown', window._mouseListener);
+
         window._keyListener = function (e) {
             if (document.querySelector('vaadin-dialog-overlay')) return;
 
@@ -70,6 +85,7 @@ window.dhbwMemory = (function () {
             else if (e.key === 'ArrowDown')  { focus = Math.min(focus + size, total - 1);  moved = true; }
             else if (e.key === 'ArrowUp')    { focus = Math.max(focus - size, 0);          moved = true; }
             else if (isFlip) {
+                document.body.classList.add('keyboard-mode');
                 server.handleKeyboardFlip(focus);
                 e.preventDefault();
                 return;
@@ -78,11 +94,115 @@ window.dhbwMemory = (function () {
             if (moved) {
                 if (isControl && (tag === 'VAADIN-BUTTON' || tag === 'BUTTON') && ae.blur) ae.blur();
                 e.preventDefault();
+                document.body.classList.add('keyboard-mode');
                 server.setKeyboardFocus(focus);
             }
         };
         document.addEventListener('keydown', window._keyListener);
     }
 
-    return { startTimer: startTimer, stopTimer: stopTimer, initKeyboard: initKeyboard };
+    // ── Theme switching ──────────────────────────────────────────────────
+    //
+    // Three user-facing modes: 'light', 'dark', 'system'. The preference is
+    // stored in localStorage; the actually-applied theme is mirrored onto
+    // <html theme="…"> so both Lumo components and our CSS variables react.
+
+    const THEME_KEY = 'dhbw-memory-theme';
+
+    function resolveTheme(pref) {
+        if (pref === 'system') {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return pref;
+    }
+
+    function applyTheme(pref) {
+        document.documentElement.setAttribute('theme', resolveTheme(pref));
+    }
+
+    /** Persists the chosen mode and applies it immediately. */
+    function setTheme(pref) {
+        localStorage.setItem(THEME_KEY, pref);
+        applyTheme(pref);
+    }
+
+    /** Returns the user's stored preference (defaults to 'system'). */
+    function getThemePref() {
+        return localStorage.getItem(THEME_KEY) || 'system';
+    }
+
+    // Re-resolve when the OS theme flips and the user is on 'system' mode.
+    // Idempotent: safe to call initKeyboard again or reload — only the latest
+    // listener is active because we register via matchMedia (not a free addEventListener
+    // loop that could accumulate).
+    if (!window._themeMqListenerRegistered) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+            if (getThemePref() === 'system') applyTheme('system');
+        });
+        window._themeMqListenerRegistered = true;
+    }
+
+    // ── Confetti ─────────────────────────────────────────────────────────
+    //
+    // Tiny canvas confetti — no dependency. Used on the end-of-game dialog.
+    // Particles fall under gravity for ~4 s, then the canvas is removed so
+    // it doesn't accumulate in the DOM across replays.
+
+    function showConfetti() {
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText =
+            'position:fixed;top:0;left:0;width:100vw;height:100vh;' +
+            'pointer-events:none;z-index:9999';
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        const colors = ['#863bff', '#47bfff', '#22c55e', '#ff5252', '#ffd700', '#ffffff'];
+        const particles = [];
+        for (let i = 0; i < 160; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: -10 - Math.random() * 200,
+                vx: (Math.random() - 0.5) * 5,
+                vy: 2 + Math.random() * 4,
+                size: 5 + Math.random() * 7,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rot: Math.random() * Math.PI * 2,
+                vrot: (Math.random() - 0.5) * 0.25
+            });
+        }
+
+        const start = Date.now();
+        function frame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const p of particles) {
+                p.vy += 0.08; // gravity
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rot += p.vrot;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+            }
+            if (Date.now() - start < 4000) {
+                requestAnimationFrame(frame);
+            } else {
+                canvas.remove();
+            }
+        }
+        frame();
+    }
+
+    return {
+        startTimer: startTimer,
+        stopTimer: stopTimer,
+        initKeyboard: initKeyboard,
+        setTheme: setTheme,
+        getThemePref: getThemePref,
+        showConfetti: showConfetti
+    };
 })();

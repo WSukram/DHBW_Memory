@@ -43,14 +43,15 @@ public class EndGameDialog extends Dialog {
             int accuracy = player.getTurns() > 0
                     ? (player.getScore() * 100 / player.getTurns())
                     : 0;
+            String pairs = pairsLabel(player.getScore());
             String label = solo
-                    ? player.getScore() + " pairs  ·  " + accuracy + "% accuracy"
-                    : player.getName() + ": " + player.getScore() + " pairs  ·  " + accuracy + "% accuracy";
+                    ? pairs + "  ·  " + accuracy + "% accuracy"
+                    : player.getName() + ": " + pairs + "  ·  " + accuracy + "% accuracy";
             content.add(new Paragraph(label));
         }
 
         content.add(new Paragraph("Time: " + formatTime(elapsedSeconds)
-                + "  ·  Moves: " + game.getTotalTurns()));
+                + "  ·  " + movesLabel(game.getTotalTurns())));
 
         Button sameSettings = new Button("Same Settings", e -> {
             close();
@@ -82,5 +83,13 @@ public class EndGameDialog extends Dialog {
         long m = elapsedSeconds / 60;
         long s = elapsedSeconds % 60;
         return m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    private static String pairsLabel(int n) {
+        return n == 1 ? "1 pair" : n + " pairs";
+    }
+
+    private static String movesLabel(int n) {
+        return n == 1 ? "1 move" : n + " moves";
     }
 }

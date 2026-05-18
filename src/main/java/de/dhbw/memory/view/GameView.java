@@ -242,7 +242,7 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
                 statusContent.add(arrow);
             }
 
-            Span playerSpan = new Span(player.getName() + ": " + player.getScore() + " pairs");
+            Span playerSpan = new Span(player.getName() + ": " + pairsLabel(player.getScore()));
             playerSpan.addClassName(isActive ? "player-active" : "player-inactive");
             statusContent.add(playerSpan);
         }
@@ -252,9 +252,11 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         statusContent.add(moves);
     }
 
-    /** Overlay shown when every pair has been matched. */
+    /** Overlay shown when every pair has been matched; also fires the confetti. */
     private void showEndDialog(Game game) {
-        UI.getCurrent().getPage().executeJs("window.dhbwMemory.stopTimer();");
+        UI.getCurrent().getPage().executeJs(
+                "window.dhbwMemory.stopTimer();"
+                        + "window.dhbwMemory.showConfetti();");
         new EndGameDialog(
                 game,
                 gameService.getElapsedSeconds(),
@@ -293,6 +295,11 @@ public class GameView extends VerticalLayout implements BeforeEnterObserver {
         keyboardFocus = 0;
         animateEntrance = true;
         refreshBoard();
+    }
+
+    /** "1 pair" vs "N pairs" — keeps the status bar grammatically correct. */
+    private static String pairsLabel(int score) {
+        return score == 1 ? "1 pair" : score + " pairs";
     }
 
     /** Factory for the small circular icon-style buttons in the status bar (←, ?). */

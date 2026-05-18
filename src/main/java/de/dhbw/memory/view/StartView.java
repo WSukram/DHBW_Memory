@@ -1,5 +1,6 @@
 package de.dhbw.memory.view;
 
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -37,6 +38,8 @@ import java.util.List;
 @PageTitle("DHBW Memory – Start")
 public class StartView extends VerticalLayout {
 
+    private final RadioButtonGroup<String> colorTheme = new RadioButtonGroup<>();
+
     /**
      * Spring injects {@link GameService} (it is a {@code @Service} bean).
      * Constructor injection makes the dependency explicit and testable.
@@ -49,6 +52,8 @@ public class StartView extends VerticalLayout {
         addClassName("app-body");
 
         UI.getCurrent().getPage().addStyleSheet("/styles.css");
+        // game.js exposes window.dhbwMemory.setTheme — needed by the theme switcher.
+        UI.getCurrent().getPage().addJavaScript("/game.js");
 
         // --- Header: WP icon + brand title side-by-side ---
         Image brandIcon = new Image("/images/wp-icon.svg", "WalletPulse");
@@ -69,6 +74,27 @@ public class StartView extends VerticalLayout {
         playerCount.setLabel("Number of players");
         playerCount.setItems(1, 2);
         playerCount.setValue(1);
+
+        // --- Colour theme (Light / Dark / System) — same radio-button pattern
+        //     as the other settings. Initial server-side value is "system"; a
+        //     small executeJs call below reconciles it with localStorage on
+        //     attach so the visible selection matches the applied theme. ---
+        colorTheme.setLabel("Colour theme");
+        colorTheme.setItems("light", "dark", "system");
+        colorTheme.setValue("system");
+        colorTheme.setRenderer(new ComponentRenderer<>(StartView::themeRadioRow));
+        colorTheme.addValueChangeListener(e -> {
+            if (e.isFromClient() && e.getValue() != null) {
+                applyTheme(e.getValue());
+            }
+        });
+
+        HorizontalLayout topRow = new HorizontalLayout(playerCount, colorTheme);
+        topRow.setWidthFull();
+        topRow.setSpacing(true);
+        topRow.getStyle().set("flex-wrap", "wrap");
+        topRow.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        topRow.setAlignItems(FlexComponent.Alignment.END);
 
         // --- Names side-by-side. name2 is always laid out, just hidden when 1-player.
         //     visibility:hidden (vs setVisible/display:none) keeps the slot reserved
@@ -156,13 +182,63 @@ public class StartView extends VerticalLayout {
         startBtn.addClassName("btn-gradient");
 
         // --- Glass card container groups all controls under the title. ---
-        VerticalLayout card = new VerticalLayout(playerCount, names, settings, startBtn);
+        VerticalLayout card = new VerticalLayout(topRow, names, settings, startBtn);
         card.setSpacing(true);
         card.setMaxWidth("640px");
         card.setWidthFull();
-        card.setHorizontalComponentAlignment(Alignment.CENTER, playerCount);
         card.addClassNames("glass-surface", "setup-card");
 
         add(header, subtitle, card);
+
+        // Reconcile the radio's visual state with localStorage after the
+        // element is attached. Without this, a returning user who chose
+        // "dark" last session would see the page rendered dark but the radio
+        // still pointing at "system".
+        getElement().executeJs(
+                "var pref = localStorage.getItem('dhbw-memory-theme') || 'system';"
+                        + "this.$server.onThemeSync(pref);");
+    }
+
+    /** Called from the client after page load to mirror localStorage into the radio. */
+    @ClientCallable
+    public void onThemeSync(String pref) {
+        if (pref != null && !pref.equals(colorTheme.getValue())) {
+            // The change listener guards on isFromClient() so setting the
+            // value here does not loop back into applyTheme().
+            colorTheme.setValue(pref);
+        }
+    }
+
+    /** Renders one colour-theme option: a Material Symbols icon + capitalised label. */
+    private static Div themeRadioRow(String value) {
+        String iconName = switch (value) {
+            case "light"  -> "light_mode";
+            case "dark"   -> "dark_mode";
+            default       -> "desktop_windows";
+        };
+        String label = switch (value) {
+            case "light"  -> "Light";
+            case "dark"   -> "Dark";
+            default       -> "System";
+        };
+
+        Span icon = new Span(iconName);
+        icon.addClassName("material-symbols-outlined");
+
+        Span s = new Span(label);
+        s.getStyle().set("line-height", "1");
+
+        Div row = new Div(icon, s);
+        row.getStyle()
+                .set("display", "inline-flex")
+                .set("align-items", "center")
+                .set("gap", "8px");
+        return row;
+    }
+
+    /** Calls into {@code window.dhbwMemory.setTheme} so the choice is persisted + applied. */
+    private static void applyTheme(String mode) {
+        UI.getCurrent().getElement().executeJs(
+                "window.dhbwMemory && window.dhbwMemory.setTheme($0);", mode);
     }
 }

@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
  * therefore stays focused on board lifecycle and click → service wiring.</p>
  *
  * @author Markus Wenninger
+ */
 @Route("game")
 @PageTitle("DHBW Memory")
 public class GameView extends VerticalLayout implements BeforeEnterObserver {

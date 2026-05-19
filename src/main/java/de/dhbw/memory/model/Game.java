@@ -80,7 +80,7 @@ public class Game {
 
     /**
      * Marks both cards of a matching pair and awards the active player a point.
-     * Active player keeps the turn (bonus-turn rule from requirement #FANF10).
+     * Active player keeps the turn (bonus-turn rule).
      */
     private void resolveMatch() {
         firstFlipped.match();

@@ -70,7 +70,7 @@ public class GameService {
         this.startTimeMs = System.currentTimeMillis();
         Board board = new Board(gridSize, theme);
         // System.currentTimeMillis() gives a different seed each game, so cards
-        // are shuffled differently every time (requirement #FANF04).
+        // are shuffled differently every time.
         board.shuffle(System.currentTimeMillis());
 
         List<Player> players = playerNames.stream()
@@ -87,7 +87,7 @@ public class GameService {
      * <p>On {@link FlipResult#NO_MATCH} this method schedules a background task
      * that waits {@value #FLIP_BACK_DELAY_MS} ms, calls {@link Game#resetMismatch()},
      * then runs {@code afterReset} inside {@link UI#access} so the view can
-     * re-render without blocking the UI thread (requirement #FANF09).</p>
+     * re-render without blocking the UI thread.</p>
      *
      * <p>While the flip-back delay is in progress, every subsequent call returns
      * {@link FlipResult#INVALID} to prevent the player from clicking more cards.</p>

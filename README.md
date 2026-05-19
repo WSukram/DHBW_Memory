@@ -134,4 +134,52 @@ The card back is a unified WalletPulse-branded SVG.
 
 ---
 
+## Submission checklist
+
+Run these steps **in order, immediately before sending the submission
+email**. The test report page (`/tests/index.html`) embeds the run date
+and the full Maven console log, so doing it last keeps that date current.
+
+```bash
+# 0. Pin JDK 21 (Vaadin frontend can't parse JDK 25 bytecode)
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+
+# 1. Run all tests — must end with "Tests run: 59, Failures: 0"
+./mvnw test
+```
+
+**2. Update the test report page** at
+`src/main/resources/static/tests/index.html`:
+- the subtitle date near the top: `… last run YYYY-MM-DD`
+- the `[INFO] Finished at: …` line at the bottom of the embedded Maven log
+- (any test count / suite time numbers if they drifted)
+
+```bash
+# 3. Regenerate JavaDoc and copy it into the jar's static resources
+rm -rf src/main/resources/static/docs
+mvn javadoc:javadoc
+cp -R target/reports/apidocs/. src/main/resources/static/docs/
+
+# 4. Repack the JavaDoc zip (one of the email attachments)
+rm -f javadoc.zip
+( cd target/reports/apidocs && zip -qr ../../../javadoc.zip . )
+
+# 5. Build the production fat jar — bundles the fresh docs + tests page
+mvn clean package -P production -DskipTests
+
+# 6. Refresh the abgabe/ folder (the three email attachments)
+cp target/DHBW-Memory-Markus-Wenninger.jar abgabe/
+cp javadoc.zip abgabe/
+```
+
+After step 6, `abgabe/` contains exactly the three files to attach:
+
+| File | Purpose |
+|---|---|
+| `DHBW-Memory-Markus-Wenninger.jar` | executable Java application |
+| `class-diagramm-v4.png` | UML class diagram |
+| `javadoc.zip` | packed JavaDoc |
+
+---
+
 **Course**: Programmieren – Java · **University**: DHBW Ravensburg Campus Friedrichshafen · **Author**: Markus Wenninger

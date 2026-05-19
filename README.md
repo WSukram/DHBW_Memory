@@ -34,8 +34,9 @@ java -jar target/DHBW_Memory-1.0-SNAPSHOT.jar
 # Generate JavaDoc → target/reports/apidocs/index.html
 mvn javadoc:javadoc
 
-# Run all tests (56 unit tests covering model + controller)
+# Run all tests (59 unit tests covering model + controller)
 mvn test
+# or: ./mvnw test     # uses the bundled Maven wrapper, no global mvn required
 ```
 
 ### Docker
@@ -88,6 +89,33 @@ src/main/java/de/dhbw/memory/
 **UML class diagram:**
 - v2 — color-coded by layer: [`docs/uml/class-diagram-v2.png`](docs/uml/class-diagram-v2.png) (source: [`class-diagram-v2.puml`](docs/uml/class-diagram-v2.puml))
 - v1 — auto-layout reference: [`docs/uml/class-diagram-v1.png`](docs/uml/class-diagram-v1.png) (source: [`class-diagram-v1.puml`](docs/uml/class-diagram-v1.puml))
+
+---
+
+## Tests
+
+**59 JUnit 5 tests** covering the game logic (model) and the orchestrator
+(controller). The model layer is pure Java, so tests run in milliseconds
+without spinning up Spring or Vaadin.
+
+| Suite | Package | Tests |
+|---|---|---|
+| `GameServiceTest` | `controller` | 12 |
+| `GameTest` | `model` | 19 |
+| `BoardTest` | `model` | 7 |
+| `CardTest` | `model` | 7 |
+| `PlayerTest` | `model` | 7 |
+| `ThemeTest` | `model` | 7 |
+
+```bash
+./mvnw test    # → 59 tests, 0 failures, 0 errors, 0 skipped
+```
+
+A browsable HTML test report (per-suite breakdown + full `./mvnw test`
+console output) is bundled into the fat jar and served at
+[`/tests/index.html`](http://localhost:8080/tests/index.html) once the
+app is running. JavaDoc is bundled the same way at
+[`/docs/index.html`](http://localhost:8080/docs/index.html).
 
 ---
 

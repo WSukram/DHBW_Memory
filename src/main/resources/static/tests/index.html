@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Test Report – DHBW Memory</title>
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --surface-2: #232340;
+    --outline: #2d2d4a;
+    --text: #e9e9f3;
+    --text-muted: #9b9bb5;
+    --accent: #7c8cff;
+    --ok: #4ade80;
+    --ok-soft: rgba(74, 222, 128, 0.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  header {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  h1 { margin: 0 0 6px; font-size: 22px; font-weight: 600; }
+  .subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .stats { display: flex; gap: 24px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; }
+  .stat-value { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stat-value.ok { color: var(--ok); }
+  .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .suite {
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .suite-head {
+    padding: 16px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    border-bottom: 1px solid var(--outline);
+  }
+  .suite-name { font-weight: 600; font-size: 15px; }
+  .suite-name .pkg { color: var(--text-muted); font-weight: 400; font-size: 13px; }
+  .suite-meta { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .cases { list-style: none; margin: 0; padding: 0; }
+  .case {
+    padding: 8px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--surface-2);
+    font-size: 13px;
+  }
+  .case:last-child { border-bottom: none; }
+  .case-name { font-family: "SF Mono", Menlo, monospace; }
+  .case-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ok);
+    background: var(--ok-soft);
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .case-time { color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .log-section { margin-top: 24px; }
+  .log-title { font-size: 14px; font-weight: 600; margin: 0 0 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  pre.log {
+    background: #0b0b14;
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 0;
+    overflow-x: auto;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #c8c8d8;
+  }
+  pre.log .ok { color: var(--ok); }
+  pre.log .hdr { color: var(--accent); }
+  footer { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 32px; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Test Report — DHBW Memory</h1>
+    <div class="subtitle">JUnit 5 · Surefire 3.5.2 · last run 2026-05-19</div>
+    <div class="stats">
+      <div class="stat"><span class="stat-value ok">59</span><span class="stat-label">tests</span></div>
+      <div class="stat"><span class="stat-value ok">0</span><span class="stat-label">failures</span></div>
+      <div class="stat"><span class="stat-value ok">0</span><span class="stat-label">errors</span></div>
+      <div class="stat"><span class="stat-value ok">0</span><span class="stat-label">skipped</span></div>
+      <div class="stat"><span class="stat-value">6</span><span class="stat-label">suites</span></div>
+      <div class="stat"><span class="stat-value">60 ms</span><span class="stat-label">total time</span></div>
+    </div>
+  </header>
+
+  <section class="suite">
+    <div class="suite-head">
+      <div class="suite-name">GameServiceTest <span class="pkg">de.dhbw.memory.controller</span></div>
+      <div class="suite-meta">12 tests · 30 ms</div>
+    </div>
+    <ul class="cases">
+      <li class="case"><span class="case-name">isWaitingForFlipBackStartsFalse</span><span><span class="case-time">10 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">startGameCreatesUnfinishedGame</span><span><span class="case-time">2 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">firstFlipReturnsFirstFlip</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">startGameWithTwoPlayers</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">startGameResetsWaitingFlag</span><span><span class="case-time">3 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">secondFlipMatchReturnsMatch</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">getGameIsNullBeforeStart</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">noMatchSetsWaitingFlag</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">matchDoesNotSetWaitingFlag</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">flipBeforeStartReturnsInvalid</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">startGameCreatesNonNullGame</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">flipBlockedWhileWaiting</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+    </ul>
+  </section>
+
+  <section class="suite">
+    <div class="suite-head">
+      <div class="suite-name">BoardTest <span class="pkg">de.dhbw.memory.model</span></div>
+      <div class="suite-meta">7 tests · 7 ms</div>
+    </div>
+    <ul class="cases">
+      <li class="case"><span class="case-name">eachMotifAppearsTwice</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">invalidGridSizeThrows</span><span><span class="case-time">2 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">getCardAtReturnsCorrectCard</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">sixBySixBoardHasThirtySixCards</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">fourByFourBoardHasSixteenCards</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">shuffleDiffersWithDifferentSeeds</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">shuffleIsDeterministicWithSameSeed</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+    </ul>
+  </section>
+
+  <section class="suite">
+    <div class="suite-head">
+      <div class="suite-name">CardTest <span class="pkg">de.dhbw.memory.model</span></div>
+      <div class="suite-meta">7 tests · 3 ms</div>
+    </div>
+    <ul class="cases">
+      <li class="case"><span class="case-name">newCardIsNotMatched</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">matchIsIdempotent</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">newCardIsFaceDown</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">matchMarksMatchedAndFaceUp</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">idAndMotifAreReturnedCorrectly</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">flipMakesCardFaceUp</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">doubleFlipReturnsFaceDown</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+    </ul>
+  </section>
+
+  <section class="suite">
+    <div class="suite-head">
+      <div class="suite-name">GameTest <span class="pkg">de.dhbw.memory.model</span></div>
+      <div class="suite-meta">19 tests · 14 ms</div>
+    </div>
+    <ul class="cases">
+      <li class="case"><span class="case-name">isFinishedFalseWhileUnmatchedCardsRemain</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">matchDoesNotSwitchActivePlayer</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">flipAlreadyMatchedCardReturnsInvalid</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">noMatchActivePlayerUnchangedUntilResetMismatch</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">secondFlipNonMatchingReturnsNoMatch</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">tieWhenScoresAreEqual</span><span><span class="case-time">2 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">secondFlipMatchingPairReturnsMatch</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">winnerIsHigherScoringPlayer</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">firstFlipReturnsFirstFlip</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">matchIncreasesActivePlayerScore</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">matchedCardsAreMarkedMatched</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">flipAlreadyFaceUpCardReturnsInvalid</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">resetMismatchFlipsCardsFaceDown</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">isFinishedTrueWhenAllCardsMatched</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">singlePlayerAlwaysWins</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">resetMismatchSwitchesPlayer</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">noMatchDoesNotChangeScore</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">firstFlipLeavesOnlyOneCardFaceUp</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">totalTurnsIncreasesOnSecondFlip</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+    </ul>
+  </section>
+
+  <section class="suite">
+    <div class="suite-head">
+      <div class="suite-name">PlayerTest <span class="pkg">de.dhbw.memory.model</span></div>
+      <div class="suite-meta">7 tests · 3 ms</div>
+    </div>
+    <ul class="cases">
+      <li class="case"><span class="case-name">addTurnIncrementsTurns</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">addPointIncrementsScore</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">newPlayerTurnsIsZero</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">nameIsReturnedCorrectly</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">addPointCanBeCalledMultipleTimes</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">addTurnAndAddPointAreIndependent</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">newPlayerScoreIsZero</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+    </ul>
+  </section>
+
+  <section class="suite">
+    <div class="suite-head">
+      <div class="suite-name">ThemeTest <span class="pkg">de.dhbw.memory.model</span></div>
+      <div class="suite-meta">7 tests · 3 ms</div>
+    </div>
+    <ul class="cases">
+      <li class="case"><span class="case-name">languagesHasEighteenDistinctMotifs</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">invalidGridSizeThrows</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">cryptoHasEighteenDistinctMotifs</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">getMotifsForFourReturnsEightMotifs</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">getMotifsForSixReturnsEighteenMotifs</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">cryptoFolderIsCrypto</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+      <li class="case"><span class="case-name">languagesFolderIsLanguages</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
+    </ul>
+  </section>
+
+  <div class="log-section">
+    <div class="log-title">./mvnw test — full output</div>
+<pre class="log">[INFO] Scanning for projects...
+[INFO]
+[INFO] ---------------------&lt; de.dhbw.memory:DHBW_Memory &gt;---------------------
+[INFO] Building DHBW Memory 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ DHBW_Memory ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 140 resources from src/main/resources to target/classes
+[INFO]
+[INFO] &gt;&gt;&gt; vaadin:24.5.6:prepare-frontend (default) &gt; :configure @ DHBW_Memory &gt;&gt;&gt;
+[INFO]
+[INFO] --- vaadin:24.5.6:configure (configure) @ DHBW_Memory ---
+[INFO]
+[INFO] &lt;&lt;&lt; vaadin:24.5.6:prepare-frontend (default) &lt; :configure @ DHBW_Memory &lt;&lt;&lt;
+[INFO]
+[INFO]
+[INFO] --- vaadin:24.5.6:prepare-frontend (default) @ DHBW_Memory ---
+[INFO] Reflections took 775 ms to scan 192 urls, producing 8877 keys and 45556 values
+[INFO] Visited 101 classes. Took 48 ms.
+[INFO] Copying frontend resources from jar files ...
+[INFO] Visited 179 resources. Took 93 ms.
+[INFO]
+[INFO] --- compiler:3.13.0:compile (default-compile) @ DHBW_Memory ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ DHBW_Memory ---
+[INFO] skip non existing resourceDirectory /Users/markus/Coding/DHBW/Programmieren/Java/DHBW_Memory/src/test/resources
+[INFO]
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ DHBW_Memory ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- surefire:3.5.2:test (default-test) @ DHBW_Memory ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  <span class="hdr">T E S T S</span>
+[INFO] -------------------------------------------------------
+[INFO] Running de.dhbw.memory.controller.GameServiceTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in de.dhbw.memory.controller.GameServiceTest
+[INFO] Running de.dhbw.memory.model.CardTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in de.dhbw.memory.model.CardTest
+[INFO] Running de.dhbw.memory.model.BoardTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in de.dhbw.memory.model.BoardTest
+[INFO] Running de.dhbw.memory.model.GameTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in de.dhbw.memory.model.GameTest
+[INFO] Running de.dhbw.memory.model.ThemeTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in de.dhbw.memory.model.ThemeTest
+[INFO] Running de.dhbw.memory.model.PlayerTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in de.dhbw.memory.model.PlayerTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] <span class="ok">Tests run: 59, Failures: 0, Errors: 0, Skipped: 0</span>
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] <span class="ok">BUILD SUCCESS</span>
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.626 s
+[INFO] Finished at: 2026-05-19T11:32:26+02:00
+[INFO] ------------------------------------------------------------------------</pre>
+  </div>
+
+  <footer>Generated from JUnit 5 / Surefire XML output · <a href="/docs/index.html">JavaDoc</a></footer>
+</div>
+</body>
+</html>

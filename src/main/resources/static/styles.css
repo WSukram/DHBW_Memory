@@ -1,83 +1,223 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Design tokens
-   - Single source of truth for brand colours & surfaces.
-   - Dark is the default; :root[theme="light"] overrides for light mode.
-   - An inline HEAD script (MemoryApplication.configurePage) sets the theme
-     attribute from localStorage / prefers-color-scheme before paint,
-     so there is no flash of the wrong theme.
+   Soft-stack design tokens
+   ──────────────────────────────────────────────────────────────────────────
+   Ported from the WalletPulse sister project so both apps share the same
+   "soft-stack" visual language: cream paper, ink text, mint primary,
+   lavender accent, cream highlight, hair-line borders, long soft shadows.
+
+   Defaults below are the DARK palette (matches the historical default of
+   this stylesheet). :root[theme="light"] overrides for light mode. An inline
+   <head> script (MemoryApplication.configurePage) sets the theme attribute
+   from localStorage / prefers-color-scheme before paint → no FOUC.
    ────────────────────────────────────────────────────────────────────────── */
 :root {
-    --brand-purple:   #863bff;
-    --brand-cyan:     #47bfff;
+    /* ── Surface ramp ─────────────────────────────────────────────────── */
+    --paper:                #0B0C10;          /* page background */
+    --card:                 #13151B;          /* primary surface  */
+    --card-2:               #161821;          /* hover/elevated   */
+    --card-3:               #1B1E29;          /* deepest panel    */
+    --bg-deep:              var(--paper);     /* legacy alias     */
 
-    --bg-deep:        #0b1326;
+    /* Hair-line borders — six steps of subtle separation. */
+    --hair-faint:           rgba(242, 239, 232, 0.05);
+    --hair-light:           rgba(242, 239, 232, 0.07);
+    --hair:                 rgba(242, 239, 232, 0.08);
+    --hair-heavy:           rgba(242, 239, 232, 0.10);
+    --hair-div:             rgba(242, 239, 232, 0.12);
+    --hair-strong:          rgba(242, 239, 232, 0.18);
+    --outline-variant:      var(--hair-div);  /* legacy alias     */
 
-    --surface-glass:        rgba(23, 31, 51, 0.75);
-    --surface-glass-border: rgba(255, 255, 255, 0.06);
+    /* Legacy surface-container aliases — kept so older class rules below
+       (segmented background, status-bar hover, kbd chip) keep working. */
+    --surface-container:         var(--card);
+    --surface-container-low:     var(--card-2);
+    --surface-container-high:    var(--card-3);
+    --surface-container-highest: #232737;
+    --surface-glass:             rgba(19, 21, 27, 0.78);
+    --surface-glass-border:      var(--hair);
 
-    /* Solid surface layers — mirror WalletPulse's surface-container ramp.
-       Glass is reserved for floating UI (status bar, dialogs); the setup
-       card and other content panels use these instead. */
-    --surface-container:         #171f33;
-    --surface-container-low:     #131b2e;
-    --surface-container-high:    #222a3d;
-    --surface-container-highest: #2d3449;
-    --outline-variant:           rgba(255, 255, 255, 0.10);
+    /* ── Text ─────────────────────────────────────────────────────────── */
+    --ink:                  #F2EFE8;          /* primary text     */
+    --sub-ink:              rgba(242, 239, 232, 0.62);
+    --text-primary:         var(--ink);
+    --text-secondary:       rgba(242, 239, 232, 0.78);
+    --text-muted:           var(--sub-ink);
+    --text-dim:             rgba(242, 239, 232, 0.42);
+    --text-on-card:         #0E0E0C;          /* dark glyph on white card face */
+    --text-timer:           rgba(242, 239, 232, 0.72);
+    --on-tint:              #0E0E0C;          /* ink on mint chips */
 
-    --text-primary:   #dae2fd;
-    --text-secondary: #c7c4d8;
-    --text-muted:     #8090b0;
-    --text-dim:       #6070a0;
-    --text-on-card:   #1c1b1f;
-    --text-timer:     #a0b0d0;
+    /* ── Brand tints ──────────────────────────────────────────────────── */
+    --mint:                 #7BE495;
+    --mint-deep:            #A6F0B5;          /* brighter in dark  */
+    --mint-bg:              rgba(123, 228, 149, 0.14);
+    --mint-tint:            rgba(123, 228, 149, 0.18);
 
-    /* Keyboard-focus outline — needs to invert in light mode so it stays
-       visible on the white card faces. */
-    --focus-ring:     #ffffff;
+    --lavender:             #1F1A3A;
+    --lavender-mid:         #1B1738;
+    --lavender-deep:        #C7BAFF;
+    --lavender-text:        #C7BAFF;
+    --lavender-tint:        rgba(199, 186, 255, 0.18);
 
-    --shadow-card:   0 4px 12px rgba(0, 0, 0, 0.35);
-    --shadow-glass:  0 10px 30px rgba(0, 0, 0, 0.35);
+    --cream-chip:           rgba(255, 210, 122, 0.18);
+    --cream-deep:           #FFD27A;
+
+    --red-bg:               rgba(255, 143, 160, 0.14);
+    --red-deep:             #FF8FA0;
+
+    /* Brand-gradient endpoints used by .btn-gradient / .brand-title.
+       Soft-stack swaps the old purple→cyan for mint→lavender. */
+    --brand-primary:        var(--mint-deep);
+    --brand-accent:         var(--lavender-deep);
+    --brand-purple:         var(--lavender-deep); /* legacy alias */
+    --brand-cyan:           var(--mint-deep);     /* legacy alias */
+
+    /* ── Long soft shadows ────────────────────────────────────────────── */
+    --sh-card:              0 24px 60px -20px rgba(0, 0, 0, 0.55),
+                            0 2px 8px -4px rgba(0, 0, 0, 0.4);
+    --sh-hero:              0 50px 90px -28px rgba(0, 0, 0, 0.7),
+                            0 14px 30px -14px rgba(0, 0, 0, 0.4);
+    --sh-pill:              0 8px 24px -16px rgba(0, 0, 0, 0.6);
+    --sh-cta-mint:          0 16px 40px -10px rgba(123, 228, 149, 0.38);
+    --sh-cta-mint-hover:    0 22px 48px -10px rgba(123, 228, 149, 0.50);
+    --sh-cta-ink:           0 10px 30px -10px rgba(0, 0, 0, 0.70);
+    --sh-nav-logo:          0 8px 20px -8px rgba(123, 228, 149, 0.32);
+    --shadow-card:          var(--sh-card);   /* legacy alias */
+    --shadow-glass:         var(--sh-card);
+
+    /* CTA contrast pair (ink button) — inverts in light mode. */
+    --cta-ink-bg:           #F2EFE8;
+    --cta-ink-fg:           #0B0C10;
+
+    /* Soft ambient blobs behind the setup card. */
+    --blob-mint:            rgba(123, 228, 149, 0.16);
+    --blob-lavender:        rgba(199, 186, 255, 0.18);
+    --blob-cream:           rgba(255, 210, 122, 0.14);
+
+    /* Keyboard-focus outline — inverts in light mode for visibility. */
+    --focus-ring:           var(--mint);
 }
 
-/* Light mode overrides — kept on :root[theme="light"] (not [theme="light"])
-   so specificity beats the :root defaults above without !important. */
+/* ── LIGHT mode overrides ──────────────────────────────────────────────── */
 :root[theme="light"] {
-    /* Slight lavender tint mirrors WP's #fffbff body — keeps the light theme
-       from reading as a neutral Bootstrap-grey page. */
-    --bg-deep:        #fbf8ff;
+    --paper:                #FAFAF7;
+    --card:                 #FFFFFF;
+    --card-2:               #FBFBF6;
+    --card-3:               #F4F2EC;
+    --bg-deep:              var(--paper);
 
-    --surface-glass:        rgba(255, 255, 255, 0.85);
-    --surface-glass-border: rgba(0, 0, 0, 0.08);
+    --hair-faint:           rgba(14, 14, 12, 0.04);
+    --hair-light:           rgba(14, 14, 12, 0.05);
+    --hair:                 rgba(14, 14, 12, 0.06);
+    --hair-heavy:           rgba(14, 14, 12, 0.07);
+    --hair-div:             rgba(14, 14, 12, 0.08);
+    --hair-strong:          rgba(14, 14, 12, 0.12);
+    --outline-variant:      var(--hair-div);
 
-    --surface-container:         #f1ecf9;
-    --surface-container-low:     #f7f2ff;
-    --surface-container-high:    #ece6f6;
-    --surface-container-highest: #e6e0f0;
-    --outline-variant:           rgba(0, 0, 0, 0.10);
+    --surface-container:         var(--card);
+    --surface-container-low:     var(--card-2);
+    --surface-container-high:    var(--card-3);
+    --surface-container-highest: #ECE9DF;
+    --surface-glass:             rgba(255, 255, 255, 0.82);
+    --surface-glass-border:      var(--hair);
 
-    --text-primary:   #1a1a2e;
-    --text-secondary: #3a3a4e;
-    --text-muted:     #6a6a7e;
-    --text-dim:       #8a8a9e;
-    --text-on-card:   #1c1b1f;
-    --text-timer:     #4a4a5e;
+    --ink:                  #0E0E0C;
+    --sub-ink:              #6B6B66;
+    --text-primary:         var(--ink);
+    --text-secondary:       #3A3A33;
+    --text-muted:           var(--sub-ink);
+    --text-dim:             #9A9A93;
+    --text-on-card:         #1c1b1f;
+    --text-timer:           #4A4A45;
 
-    --focus-ring:     #1a1a2e;
+    --mint:                 #7BE495;
+    --mint-deep:            #3FBF7F;
+    --mint-bg:              #E8FBEE;
+    --mint-tint:            #F2FBF6;
 
-    --shadow-card:   0 4px 12px rgba(0, 0, 0, 0.15);
-    --shadow-glass:  0 10px 30px rgba(0, 0, 0, 0.10);
+    --lavender:             #E9E4FF;
+    --lavender-mid:         #F5F1FF;
+    --lavender-deep:        #A89BFF;
+    --lavender-text:        #3D2F8F;
+    --lavender-tint:        #F7F4FF;
+
+    --cream-chip:           #FFF1D6;
+    --cream-deep:           #B17900;
+
+    --red-bg:               #FDECEC;
+    --red-deep:             #C9453C;
+
+    --brand-primary:        var(--mint-deep);
+    --brand-accent:         var(--lavender-deep);
+    --brand-purple:         var(--lavender-deep);
+    --brand-cyan:           var(--mint-deep);
+
+    --sh-card:              0 20px 60px -20px rgba(14, 14, 12, 0.12);
+    --sh-hero:              0 40px 80px -28px rgba(14, 14, 12, 0.28),
+                            0 14px 30px -14px rgba(14, 14, 12, 0.12);
+    --sh-pill:              0 8px 24px -16px rgba(14, 14, 12, 0.18);
+    --sh-cta-mint:          0 16px 40px -12px rgba(123, 228, 149, 0.70);
+    --sh-cta-mint-hover:    0 22px 48px -12px rgba(123, 228, 149, 0.80);
+    --sh-cta-ink:           0 10px 24px -10px rgba(14, 14, 12, 0.40);
+    --sh-nav-logo:          0 8px 20px -8px rgba(123, 228, 149, 0.55);
+    --shadow-card:          var(--sh-card);
+    --shadow-glass:         var(--sh-card);
+
+    --cta-ink-bg:           #0E0E0C;
+    --cta-ink-fg:           #FAFAF7;
+
+    --blob-mint:            rgba(123, 228, 149, 0.20);
+    --blob-lavender:        rgba(233, 228, 255, 0.60);
+    --blob-cream:           rgba(255, 233, 184, 0.67);
+
+    --focus-ring:           #0E0E0C;
 }
 
-/* ── App body (deep navy background + Inter font) ──────────────────────── */
+/* ── App body ──────────────────────────────────────────────────────────── */
 .app-body {
-    background: var(--bg-deep);
-    font-family: 'Inter', sans-serif;
-    color: var(--text-primary);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    /* Slightly looser tracking like the soft-stack body copy. */
+    letter-spacing: -0.005em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Soft ambient blobs behind the setup view. Painted on the body via
+   ::before / ::after, fixed so they don't scroll with the content. */
+.app-body::before,
+.app-body::after {
+    content: "";
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    filter: blur(20px);
+    z-index: 0;
+}
+.app-body::before {
+    top: -240px;
+    left: 50%;
+    width: 1100px;
+    height: 600px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, var(--blob-mint), transparent 70%);
+}
+.app-body::after {
+    top: 120px;
+    right: -160px;
+    width: 460px;
+    height: 460px;
+    background: radial-gradient(closest-side, var(--blob-lavender), transparent 70%);
+}
+
+/* Lift app content above the ambient blobs. */
+.app-body > * {
+    position: relative;
+    z-index: 1;
 }
 
 /* ── Material Symbols (Google's outlined icon font) ─────────────────────── */
-/* Use as: <span class="material-symbols-outlined">dark_mode</span>.
-   These ligature settings + line-height keep glyphs crisp at 20-22px. */
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined';
     font-weight: normal;
@@ -93,88 +233,90 @@
     -webkit-font-feature-settings: 'liga';
     font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* ── Title with brand gradient ──────────────────────────────────────────── */
+/* ── Brand title (semibold display type, no gradient slop) ─────────────── */
 .brand-title {
-    background: linear-gradient(90deg, var(--brand-purple), var(--brand-cyan));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    color: var(--ink);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.0;
     margin: 0;
+    /* Subtle mint highlight bar under the title — echoes the soft-stack hero
+       underline. Implemented as a background image so layout doesn't shift. */
+    background-image: linear-gradient(transparent 78%, var(--mint-tint) 78%);
+    background-repeat: no-repeat;
+    padding: 0 2px;
 }
 
 .brand-icon {
     width: 44px;
     height: 44px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(134, 59, 255, 0.35);
+    border-radius: 12px;
+    box-shadow: var(--sh-nav-logo);
 }
 
 .setup-subtitle {
-    color: var(--text-secondary);
+    color: var(--sub-ink);
     font-weight: 500;
-    margin: 4px 0 18px;
+    margin: 6px 0 22px;
+    font-size: 0.95rem;
+    line-height: 1.55;
 }
 
-/* ── Glass surface (setup card + in-game status bar) ────────────────────── */
+/* ── Surface cards ──────────────────────────────────────────────────────
+   .surface-card is the canonical content panel (setup card, stats panel).
+   .glass-surface is kept for the in-game status bar (sticky, blurs body).
+   Both use generous radius + long soft shadow + hair border — the soft-
+   stack signature.
+   ────────────────────────────────────────────────────────────────────── */
+.surface-card {
+    background: var(--card);
+    border: 1px solid var(--hair-light);
+    border-radius: 24px;
+    box-shadow: var(--sh-hero);
+}
+
 .glass-surface {
     background: var(--surface-glass);
     border: 1px solid var(--surface-glass-border);
-    border-radius: 16px;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-glass);
+    border-radius: 18px;
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    box-shadow: var(--sh-pill);
 }
 
 .setup-card {
-    /* clamp scales padding smoothly from mobile to desktop, no media query needed. */
-    padding: clamp(20px, 4vw, 32px);
+    padding: clamp(24px, 4vw, 36px);
     box-sizing: border-box;
 }
 
-/* ── Solid surface card (content panels) ────────────────────────────────────
-   WalletPulse uses surface-container + outline-variant for content cards and
-   reserves glass for floating UI. The setup card uses .surface-card so it
-   reads as a solid panel rather than a sheet floating over the body.
-   ────────────────────────────────────────────────────────────────────────── */
-.surface-card {
-    background: var(--surface-container);
-    border: 1px solid var(--outline-variant);
-    border-radius: 16px;
-    box-shadow: var(--shadow-glass);
-}
-
-/* ── Field group (small uppercase label above the control) ─────────────── */
+/* ── Field group (small uppercase eyebrow above the control) ───────────── */
 .field-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .field-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--text-muted);
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--sub-ink);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.20em;
     padding-left: 2px;
 }
 
-/* ── Segmented control (pill row replacement for RadioButtonGroup) ──────────
-   Container = role=radiogroup, children = role=radio NativeButtons. Both the
-   default ".segmented" pill row and the larger ".chips" variant share this
-   selector tree.
-   ────────────────────────────────────────────────────────────────────────── */
+/* ── Segmented control ─────────────────────────────────────────────────── */
 .segmented {
     display: inline-flex;
     align-items: stretch;
-    background: var(--surface-container-low);
-    border: 1px solid var(--outline-variant);
-    border-radius: 10px;
-    padding: 3px;
+    background: var(--card-2);
+    border: 1px solid var(--hair);
+    border-radius: 999px;          /* full pill */
+    padding: 4px;
     gap: 2px;
     width: fit-content;
 }
@@ -183,12 +325,9 @@
     appearance: none;
     border: none;
     background: transparent;
-    color: var(--text-muted);
-    /* Vertical padding tuned so the outer .segmented row matches the
-       .chips outer height (~38px) — keeps Players / Grid size / Appearance
-       visually level with the Theme picker. */
+    color: var(--sub-ink);
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 999px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.88rem;
@@ -198,25 +337,27 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: background 0.18s ease, color 0.18s ease,
+                box-shadow 0.18s ease;
 }
 
 .segmented > .seg:hover {
-    color: var(--text-primary);
-    background: var(--surface-container-high);
+    color: var(--ink);
+    background: var(--card-3);
 }
 
 .segmented > .seg.active {
-    background: var(--brand-purple);
-    color: #fff;
+    background: var(--mint);
+    color: var(--on-tint);
+    box-shadow: var(--sh-pill);
 }
 
 .segmented > .seg:focus-visible {
-    outline: 2px solid var(--brand-purple);
+    outline: 2px solid var(--mint-deep);
     outline-offset: 2px;
 }
 
-/* Icon-only variant (e.g. Light / Dark / System) — fixed-width square cells. */
+/* Icon-only variant (Light / Dark / System). */
 .segmented.icon-only > .seg {
     width: 38px;
     height: 30px;
@@ -233,12 +374,10 @@
     justify-content: center;
 }
 
-/* ── Chips (bigger card-style segments for the Theme picker) ───────────── */
+/* ── Chips (theme picker — bigger card-style segments) ─────────────────── */
 .chips {
     display: grid;
-    /* Tight min so all theme chips stay on a single row at the default
-       card width — adding/removing a theme should not reflow the form. */
-    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 10px;
     width: 100%;
     background: transparent;
@@ -249,38 +388,42 @@
 
 .chips > .seg {
     appearance: none;
-    border: 1px solid var(--outline-variant);
-    background: var(--surface-container-low);
+    border: 1px solid var(--hair);
+    background: var(--card);
     color: var(--text-secondary);
-    padding: 9px 8px;
+    padding: 11px 10px;
     min-width: 0;
-    border-radius: 10px;
+    border-radius: 16px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.86rem;
     font-family: inherit;
     line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+    transition: border-color 0.18s ease, background 0.18s ease,
+                color 0.18s ease, transform 0.18s ease,
+                box-shadow 0.18s ease;
 }
 
 .chips > .seg:hover {
-    border-color: var(--brand-purple);
-    color: var(--text-primary);
-    background: var(--surface-container);
+    border-color: var(--hair-strong);
+    color: var(--ink);
+    background: var(--card-2);
+    transform: translateY(-1px);
+    box-shadow: var(--sh-pill);
 }
 
 .chips > .seg.active {
-    border-color: var(--brand-purple);
-    background: rgba(134, 59, 255, 0.12);
-    color: var(--text-primary);
-    box-shadow: 0 0 0 1px var(--brand-purple);
+    border-color: transparent;
+    background: var(--mint-bg);
+    color: var(--ink);
+    box-shadow: 0 0 0 1.5px var(--mint-deep), var(--sh-pill);
 }
 
 .chips > .seg:focus-visible {
-    outline: 2px solid var(--brand-purple);
+    outline: 2px solid var(--mint-deep);
     outline-offset: 2px;
 }
 
@@ -297,20 +440,20 @@
     gap: 8px;
 }
 
-/* ── Status bar (in-game) ───────────────────────────────────────────────── */
+/* ── Status bar (in-game) ──────────────────────────────────────────────── */
 .status-bar {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 600px;
-    font-size: 0.9rem;
+    max-width: 680px;
+    font-size: 0.92rem;
     font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 8px;
-    color: var(--text-primary);
-    margin-bottom: 16px;
+    padding: 12px 18px;
+    border-radius: 999px;      /* pill, matches soft-stack header chips */
+    color: var(--ink);
+    margin-bottom: 18px;
     box-sizing: border-box;
 }
 
@@ -323,49 +466,59 @@
 
 .status-moves {
     margin-left: auto;
-    color: var(--text-dim);
-    font-size: 0.85rem;
+    color: var(--sub-ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
 }
 
 .status-arrow {
-    color: var(--brand-purple);
+    color: var(--mint-deep);
     font-size: 1.1rem;
     line-height: 1;
 }
 
 .player-inactive {
-    color: var(--text-muted);
+    color: var(--sub-ink);
 }
 
 #game-timer {
     color: var(--text-timer);
-    font-size: 0.85rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.86rem;
     font-variant-numeric: tabular-nums;
     margin-left: 8px;
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Dialog system
-   - Opt-in via getElement().getThemeList().add("dhbw") on the Dialog.
-   - Vaadin propagates the theme attribute onto <vaadin-dialog-overlay>, so
-     we can rewrite ::part(backdrop) / ::part(overlay) / ::part(content) from
-     this global stylesheet without touching Lumo defaults elsewhere.
-   - All three dialogs (QuitConfirm, Help, EndGame) share .dhbw-dialog layout,
-     .dialog-icon badge, .dialog-title, .dialog-actions button row.
-   ────────────────────────────────────────────────────────────────────────── */
+.player-active {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 3px 12px;
+    background: var(--mint-bg);
+    border: 1px solid transparent;
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 0 0 1px var(--mint-deep) inset;
+}
+
+/* ── Dialog system ─────────────────────────────────────────────────────── */
 vaadin-dialog-overlay[theme~="dhbw"]::part(overlay) {
-    background: var(--surface-container);
-    border: 1px solid var(--outline-variant);
-    border-radius: 18px;
-    box-shadow: var(--shadow-glass);
+    background: var(--card);
+    border: 1px solid var(--hair-heavy);
+    border-radius: 24px;
+    box-shadow: var(--sh-hero);
     padding: 0;
     overflow: hidden;
 }
 
 vaadin-dialog-overlay[theme~="dhbw"]::part(backdrop) {
-    background: rgba(5, 8, 16, 0.55);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(11, 12, 16, 0.55);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+}
+
+:root[theme="light"] vaadin-dialog-overlay[theme~="dhbw"]::part(backdrop) {
+    background: rgba(14, 14, 12, 0.35);
 }
 
 vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
@@ -379,51 +532,51 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     align-items: center;
     gap: 14px;
     text-align: center;
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Round icon badge above the title. The colour variants tint the same shell
-   so a destructive dialog reads red, info reads purple, win reads gold. */
 .dialog-icon {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
-    background: rgba(134, 59, 255, 0.16);
-    border: 1px solid rgba(134, 59, 255, 0.40);
-    color: #c3c0ff;
+    border-radius: 16px;
+    background: var(--mint-bg);
+    border: 1px solid transparent;
+    box-shadow: 0 0 0 1px var(--mint-deep) inset;
+    color: var(--mint-deep);
     margin-top: 2px;
 }
 
 .dialog-icon .material-symbols-outlined {
     font-size: 26px;
+    font-variation-settings: 'FILL' 1;
 }
 
 .dialog-icon-warning {
-    background: rgba(255, 82, 82, 0.14);
-    border-color: rgba(255, 82, 82, 0.45);
-    color: #ffb4ab;
+    background: var(--red-bg);
+    box-shadow: 0 0 0 1px var(--red-deep) inset;
+    color: var(--red-deep);
 }
 
 .dialog-icon-trophy {
-    background: linear-gradient(135deg, rgba(134, 59, 255, 0.20), rgba(71, 191, 255, 0.20));
-    border-color: rgba(195, 192, 255, 0.50);
-    color: #ffd76b;
+    background: var(--cream-chip);
+    box-shadow: 0 0 0 1px var(--cream-deep) inset;
+    color: var(--cream-deep);
 }
 
 .dialog-title {
     margin: 0;
-    font-size: 1.45rem;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
 }
 
 .dialog-title-gradient {
-    background: linear-gradient(90deg, var(--brand-purple), var(--brand-cyan));
+    background: linear-gradient(90deg, var(--mint-deep), var(--lavender-deep));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -431,12 +584,11 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 
 .dialog-body {
     margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.5;
+    color: var(--sub-ink);
+    font-size: 0.97rem;
+    line-height: 1.6;
 }
 
-/* Help dialog: rules list — leading icon + wrapping body text. */
 .dialog-rules {
     display: flex;
     flex-direction: column;
@@ -451,21 +603,17 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     align-items: flex-start;
     gap: 12px;
     color: var(--text-secondary);
-    font-size: 0.92rem;
-    /* Tall enough that wrapped lines containing .kbd chips don't overlap. */
+    font-size: 0.93rem;
     line-height: 1.9;
 }
 
 .dialog-rule > .material-symbols-outlined {
-    color: var(--brand-purple);
+    color: var(--mint-deep);
     font-size: 18px;
     margin-top: 3px;
     flex-shrink: 0;
 }
 
-/* Keyboard-key chip. vertical-align: middle + a tiny top offset keeps the
-   chips visually centered on the surrounding text cap-height (baseline-
-   aligned chips float above the text and look detached). */
 .kbd {
     display: inline-flex;
     align-items: center;
@@ -474,27 +622,26 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     height: 24px;
     padding: 0 8px;
     margin: 0 2px;
-    background: var(--surface-container-high);
-    border: 1px solid var(--outline-variant);
+    background: var(--card-3);
+    border: 1px solid var(--hair-strong);
     border-radius: 6px;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-    font-family: 'JetBrains Mono', 'Menlo', monospace;
-    font-size: 0.95rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.92rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--ink);
     line-height: 1;
     vertical-align: middle;
     position: relative;
     top: -1px;
 }
 
-/* End-game dialog: per-player stats panel. */
 .stats-panel {
     width: 100%;
-    background: var(--surface-container-low);
-    border: 1px solid var(--outline-variant);
-    border-radius: 12px;
-    padding: 14px 16px;
+    background: var(--card-2);
+    border: 1px solid var(--hair);
+    border-radius: 18px;
+    padding: 16px 18px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -505,8 +652,8 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    color: var(--text-primary);
-    font-size: 0.95rem;
+    color: var(--ink);
+    font-size: 0.96rem;
 }
 
 .stats-row > div {
@@ -520,30 +667,34 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 }
 
 .stats-meta {
-    color: var(--text-muted);
-    font-size: 0.85rem;
+    color: var(--sub-ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.84rem;
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
 }
 
 .winner-pill {
-    background: rgba(134, 59, 255, 0.18);
-    border: 1px solid rgba(134, 59, 255, 0.55);
-    color: var(--text-primary);
-    padding: 2px 8px;
+    background: var(--mint);
+    border: none;
+    color: var(--on-tint);
+    padding: 2px 10px;
     border-radius: 999px;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.10em;
 }
 
 .stats-footer {
     display: flex;
     justify-content: center;
     gap: 18px;
-    color: var(--text-muted);
-    font-size: 0.85rem;
+    color: var(--sub-ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.82rem;
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
 }
 
 .stats-footer-item {
@@ -557,7 +708,6 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     color: var(--text-dim);
 }
 
-/* Action button row at the bottom of every dialog. */
 .dialog-actions {
     display: flex;
     gap: 10px;
@@ -569,60 +719,86 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 
 .dialog-actions vaadin-button {
     min-width: 130px;
+    border-radius: 999px !important;
 }
 
-/* ── Shared button variants used by dialogs ────────────────────────────── */
-/* !important is needed to beat Lumo's own button background/border. */
+/* ── Button variants ───────────────────────────────────────────────────── */
+/* !important is needed to beat Lumo's own background/border/radius. */
 .btn-ghost {
     background: transparent !important;
     color: var(--text-secondary) !important;
-    border: 1px solid var(--outline-variant) !important;
+    border: 1px solid var(--hair-strong) !important;
+    border-radius: 999px !important;
     font-weight: 600 !important;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+    transition: background 0.18s ease, color 0.18s ease,
+                border-color 0.18s ease !important;
 }
 
 .btn-ghost:hover {
-    background: var(--surface-container-high) !important;
-    color: var(--text-primary) !important;
+    background: var(--card-2) !important;
+    color: var(--ink) !important;
+    border-color: var(--ink) !important;
 }
 
 .btn-danger {
-    background: #ef4444 !important;
+    background: var(--red-deep) !important;
     color: #fff !important;
     border: none !important;
+    border-radius: 999px !important;
     font-weight: 700 !important;
-    transition: background 0.15s ease, transform 0.15s ease !important;
+    transition: filter 0.18s ease, transform 0.18s ease !important;
 }
 
 .btn-danger:hover {
-    background: #dc2626 !important;
+    filter: brightness(1.08);
     transform: translateY(-1px);
 }
 
-/* ── Status-bar icon buttons (arrow_back, help) ────────────────────────── */
+/* Mint CTA — the soft-stack primary. Replaces the old purple→cyan gradient. */
+.btn-gradient {
+    background: var(--mint) !important;
+    color: var(--on-tint) !important;
+    border: none !important;
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+    box-shadow: var(--sh-cta-mint) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease,
+                filter 0.18s ease !important;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--sh-cta-mint-hover) !important;
+    filter: brightness(1.02);
+}
+
+/* ── Status-bar icon buttons ───────────────────────────────────────────── */
 .icon-btn {
     min-width: 32px;
     width: 32px;
     height: 32px;
     padding: 0;
-    border-radius: 8px;
-    color: var(--text-secondary);
+    border-radius: 10px;
+    color: var(--sub-ink);
     cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
 }
 
 .icon-btn:hover {
-    background: var(--surface-container-high);
-    color: var(--text-primary);
+    background: var(--card-3);
+    color: var(--ink);
 }
 
 .icon-btn .material-symbols-outlined {
     font-size: 18px;
 }
 
-/* ── Card grid (size-aware via data-size attribute) ─────────────────────── */
+/* ── Card grid (size-aware via data-size attribute) ────────────────────── */
 .card-grid {
     display: grid;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -637,14 +813,14 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     max-width: 680px;
 }
 
-/* ── Card 3D flip structure ─────────────────────────────────────────────── */
+/* ── Card 3D flip structure ────────────────────────────────────────────── */
 .card-wrapper {
     position: relative;
     aspect-ratio: 1 / 1;
-    border-radius: 10px;
+    border-radius: 18px;
     user-select: none;
-    transition: transform 0.18s ease, box-shadow 0.2s ease;
-    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.22s ease;
+    box-shadow: var(--sh-card);
 }
 
 .card-inner {
@@ -662,9 +838,9 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 .card-face {
     position: absolute;
     inset: 0;
-    border-radius: 10px;
+    border-radius: 18px;
     overflow: hidden;
-    background: white;
+    background: #FFFFFF;       /* white card face — same in both themes */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
@@ -679,14 +855,14 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     object-fit: cover;
 }
 
-/* ── Card face content (WP icon, motif, label) ─────────────────────────── */
+/* ── Card face content ─────────────────────────────────────────────────── */
 .card-face-wp {
     position: absolute;
     top: 6%;
     right: 6%;
     width: 14%;
     height: auto;
-    border-radius: 3px;
+    border-radius: 4px;
     opacity: 0.9;
 }
 
@@ -706,10 +882,10 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     left: 0;
     right: 0;
     text-align: center;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
     font-size: clamp(9px, 1.4vw, 13px);
     font-weight: 600;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.01em;
     color: var(--text-on-card);
     padding: 0 4%;
     white-space: nowrap;
@@ -717,93 +893,64 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     text-overflow: ellipsis;
 }
 
-/* ── Card states (driven by Java setState — single class per state) ────── */
+/* ── Card states ───────────────────────────────────────────────────────── */
 .card-wrapper.state-recently-matched {
     box-shadow:
-        0 0 0 4px #22c55e,
-        0 0 0 8px rgba(34, 197, 94, 0.40),
-        0 0 28px rgba(34, 197, 94, 0.60),
-        var(--shadow-card);
+        0 0 0 3px var(--mint-deep),
+        0 0 0 8px var(--mint-bg),
+        0 0 28px rgba(63, 191, 127, 0.45),
+        var(--sh-card);
     cursor: default;
 }
 
 .card-wrapper.state-mismatched {
     box-shadow:
-        0 0 0 4px #ff5252,
-        0 0 0 8px rgba(255, 82, 82, 0.30),
-        0 0 26px rgba(255, 82, 82, 0.50),
-        var(--shadow-card);
+        0 0 0 3px var(--red-deep),
+        0 0 0 8px var(--red-bg),
+        0 0 26px rgba(201, 69, 60, 0.40),
+        var(--sh-card);
     cursor: default;
 }
 
 .card-wrapper.state-face-up {
     box-shadow:
-        0 0 0 3px #c3c0ff,
-        0 0 18px rgba(195, 192, 255, 0.40),
-        var(--shadow-card);
+        0 0 0 2px var(--lavender-deep),
+        0 0 18px rgba(168, 155, 255, 0.35),
+        var(--sh-card);
     cursor: default;
 }
 
 .card-wrapper.state-waiting {
     cursor: default;
-    opacity: 0.7;
+    opacity: 0.72;
 }
 
 .card-wrapper.card-face-down {
     cursor: pointer;
 }
 
-/* ── Hover lift only on face-down clickable cards ──────────────────────── */
+/* Hover lift only on face-down clickable cards. */
 .card-face-down:hover {
     transform: translateY(-5px) scale(1.03);
     box-shadow:
-        0 0 0 2px rgba(134, 59, 255, 0.6),
-        0 10px 28px rgba(134, 59, 255, 0.30),
-        0 4px 12px rgba(0, 0, 0, 0.40);
+        0 0 0 2px var(--mint-deep),
+        0 14px 32px -8px rgba(123, 228, 149, 0.45),
+        var(--sh-card);
 }
 
 /* ── Keyboard navigation focus ring ────────────────────────────────────── */
-/* Only painted while body.keyboard-mode is set (toggled by game.js on the
-   first arrow key / removed on the next mousedown). This way the ring
-   disappears the moment the user goes back to the mouse. */
 body.keyboard-mode .card-wrapper.keyboard-focused {
     outline: 2px solid var(--focus-ring);
     outline-offset: 3px;
 }
 
-/* ── Card entrance stagger ──────────────────────────────────────────────── */
+/* ── Card entrance stagger ─────────────────────────────────────────────── */
 @keyframes cardEnter {
     from { opacity: 0; transform: translateY(18px) scale(0.88); }
     to   { opacity: 1; transform: translateY(0)   scale(1);    }
 }
 
 .card-enter {
-    animation: cardEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: cardEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--delay, 0ms);
-}
-
-/* ── Active player chip (static filled pill — no pulse) ─────────────────── */
-.player-active {
-    display: inline-block;
-    border-radius: 6px;
-    padding: 3px 10px;
-    background: rgba(134, 59, 255, 0.18);
-    border: 1px solid rgba(134, 59, 255, 0.55);
-    color: var(--text-primary);
-}
-
-/* ── Gradient "Start Game" button ───────────────────────────────────────── */
-.btn-gradient {
-    background: linear-gradient(90deg, var(--brand-purple), var(--brand-cyan)) !important;
-    color: #fff !important;
-    border: none !important;
-    font-weight: 700 !important;
-    transition: filter 0.18s, transform 0.15s !important;
-    width: 100%;
-    margin-top: 12px;
-}
-
-.btn-gradient:hover {
-    filter: brightness(1.12);
-    transform: translateY(-2px);
 }

@@ -783,8 +783,10 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 
 /* Light theme: the card face is white and so is the page (paper #FAFAF7),
    so plain elevation isn't enough to make cards pop. Add a crisp hair
-   ring + a deeper drop-shadow specifically in light mode. */
-:root[theme="light"] .card-wrapper {
+   ring + a deeper drop-shadow specifically in light mode.
+   :where(...) keeps the selector specificity at (0,0,1,0) so the
+   state-{matched,mismatched,face-up} rules below still win. */
+:where(:root[theme="light"]) .card-wrapper {
     box-shadow:
         0 0 0 1px rgba(14, 14, 12, 0.08),
         0 4px 10px -2px rgba(14, 14, 12, 0.10),

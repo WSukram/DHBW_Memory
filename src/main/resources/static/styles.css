@@ -89,11 +89,6 @@
     --cta-ink-bg:           #F2EFE8;
     --cta-ink-fg:           #0B0C10;
 
-    /* Soft ambient blobs behind the setup card. */
-    --blob-mint:            rgba(123, 228, 149, 0.16);
-    --blob-lavender:        rgba(199, 186, 255, 0.18);
-    --blob-cream:           rgba(255, 210, 122, 0.14);
-
     /* Keyboard-focus outline — inverts in light mode for visibility. */
     --focus-ring:           var(--mint);
 }
@@ -165,10 +160,6 @@
 
     --cta-ink-bg:           #0E0E0C;
     --cta-ink-fg:           #FAFAF7;
-
-    --blob-mint:            rgba(123, 228, 149, 0.20);
-    --blob-lavender:        rgba(233, 228, 255, 0.60);
-    --blob-cream:           rgba(255, 233, 184, 0.67);
 
     --focus-ring:           #0E0E0C;
 }
@@ -871,6 +862,9 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 }
 
 /* ── Card states ───────────────────────────────────────────────────────── */
+/* Matched / mismatched halos intentionally use saturated raw hex rather than
+   the muted soft-stack tokens — the halos are short-lived feedback flashes
+   and need to read louder than the rest of the surface. */
 .card-wrapper.state-recently-matched {
     box-shadow:
         0 0 0 4px #22c55e,

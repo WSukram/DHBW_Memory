@@ -904,9 +904,20 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 .card-face-down:hover {
     transform: translateY(-5px) scale(1.03);
     box-shadow:
-        0 0 0 2px var(--mint-deep),
-        0 14px 32px -8px rgba(123, 228, 149, 0.45),
+        0 0 0 3px var(--mint-deep),
+        0 0 0 7px var(--mint-bg),
+        0 16px 36px -8px rgba(123, 228, 149, 0.55),
         var(--sh-card);
+}
+
+/* Light mode: the cream card back + cream page need a darker hover ring to
+   read clearly, plus the outer halo gets a touch more opacity. */
+:root[theme="light"] .card-face-down:hover {
+    box-shadow:
+        0 0 0 3px var(--mint-deep),
+        0 0 0 7px rgba(63, 191, 127, 0.22),
+        0 16px 36px -8px rgba(63, 191, 127, 0.40),
+        0 18px 36px -16px rgba(14, 14, 12, 0.25);
 }
 
 /* ── Keyboard navigation focus ring ────────────────────────────────────── */

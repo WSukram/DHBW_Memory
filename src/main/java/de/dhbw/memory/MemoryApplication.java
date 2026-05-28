@@ -22,8 +22,9 @@ import java.util.Map;
  * Vaadin views, and wires them up automatically.</p>
  *
  * <p>{@link AppShellConfigurator#configurePage} is the application-wide hook
- * for page-level settings. We use it to (a) preload the Inter font, (b) wire
- * the WP icon as a favicon, and (c) inject a tiny inline script that sets
+ * for page-level settings. We use it to (a) preload the Geist + JetBrains Mono
+ * fonts (soft-stack typography), (b) wire the WP icon as a favicon, and
+ * (c) inject a tiny inline script that sets
  * the {@code theme} attribute on {@code <html>} before paint — so the page
  * never flashes the wrong colour scheme on load.</p>
  *
@@ -45,9 +46,11 @@ public class MemoryApplication implements AppShellConfigurator {
 
     @Override
     public void configurePage(AppShellSettings settings) {
-        // Inter font preload — our custom CSS uses it heavily.
+        // Soft-stack typography: Geist for UI/body + JetBrains Mono for tabular
+        // numbers (timer, stats). Matches the visual language of the WalletPulse
+        // sister project so both sites share a typographic feel.
         settings.addLink(
-                "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+                "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
                 Map.of("rel", "stylesheet"));
 
         // Material Symbols Outlined — same icon set used on memory.walletpulse.de

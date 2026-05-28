@@ -184,7 +184,7 @@ window.dhbwMemory = (function () {
         document.body.appendChild(canvas);
 
         const ctx = canvas.getContext('2d');
-        const colors = ['#863bff', '#47bfff', '#22c55e', '#ff5252', '#ffd700', '#ffffff'];
+        const colors = ['#7BE495', '#3FBF7F', '#A89BFF', '#FFD27A', '#FF8FA0', '#FAFAF7'];
         const particles = [];
         for (let i = 0; i < 160; i++) {
             particles.push({

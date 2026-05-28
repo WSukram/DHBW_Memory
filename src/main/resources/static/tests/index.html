@@ -4,124 +4,230 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Test Report – DHBW Memory</title>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" />
 <style>
+  /* Soft-stack palette — mirrors styles.css. Default is dark; switches to
+     the paper/ink palette when the OS reports light. The bundled app uses
+     an attribute-driven theme, but this page is opened standalone so a
+     media query is the right hook here. */
   :root {
-    --bg: #0f0f1a;
-    --surface: #1a1a2e;
-    --surface-2: #232340;
-    --outline: #2d2d4a;
-    --text: #e9e9f3;
-    --text-muted: #9b9bb5;
-    --accent: #7c8cff;
-    --ok: #4ade80;
-    --ok-soft: rgba(74, 222, 128, 0.12);
+    --paper:       #0B0C10;
+    --card:        #13151B;
+    --card-2:      #161821;
+    --card-3:      #1B1E29;
+    --ink:         #F2EFE8;
+    --sub-ink:     rgba(242, 239, 232, 0.62);
+    --hair:        rgba(242, 239, 232, 0.08);
+    --hair-heavy:  rgba(242, 239, 232, 0.12);
+    --mint:        #7BE495;
+    --mint-deep:   #A6F0B5;
+    --mint-bg:     rgba(123, 228, 149, 0.14);
+    --lavender:    #C7BAFF;
+    --sh-card:     0 24px 60px -20px rgba(0, 0, 0, 0.55),
+                   0 2px 8px -4px rgba(0, 0, 0, 0.40);
   }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --paper:       #FAFAF7;
+      --card:        #FFFFFF;
+      --card-2:      #FBFBF6;
+      --card-3:      #F4F2EC;
+      --ink:         #0E0E0C;
+      --sub-ink:     #6B6B66;
+      --hair:        rgba(14, 14, 12, 0.06);
+      --hair-heavy:  rgba(14, 14, 12, 0.10);
+      --mint:        #7BE495;
+      --mint-deep:   #3FBF7F;
+      --mint-bg:     #E8FBEE;
+      --lavender:    #A89BFF;
+      --sh-card:     0 20px 60px -20px rgba(14, 14, 12, 0.12);
+    }
+  }
+
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
-    padding: 32px 16px;
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    padding: 40px 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  .wrap { max-width: 860px; margin: 0 auto; }
+  .wrap { max-width: 920px; margin: 0 auto; }
+
   header {
-    background: var(--surface);
-    border: 1px solid var(--outline);
-    border-radius: 12px;
-    padding: 24px 28px;
-    margin-bottom: 24px;
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-radius: 24px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+    box-shadow: var(--sh-card);
   }
-  h1 { margin: 0 0 6px; font-size: 22px; font-weight: 600; }
-  .subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
-  .stats { display: flex; gap: 24px; flex-wrap: wrap; }
-  .stat { display: flex; flex-direction: column; }
-  .stat-value { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .stat-value.ok { color: var(--ok); }
-  .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: var(--sub-ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    margin-bottom: 22px;
+  }
+
+  .stats { display: flex; gap: 28px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 4px; }
+  .stat-value {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 24px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+  .stat-value.ok { color: var(--mint-deep); }
+  .stat-label {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    color: var(--sub-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.20em;
+  }
+
   .suite {
-    background: var(--surface);
-    border: 1px solid var(--outline);
-    border-radius: 12px;
-    margin-bottom: 16px;
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+    margin-bottom: 14px;
     overflow: hidden;
+    box-shadow: var(--sh-card);
   }
   .suite-head {
-    padding: 16px 22px;
+    padding: 18px 24px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     gap: 16px;
-    border-bottom: 1px solid var(--outline);
+    border-bottom: 1px solid var(--hair);
   }
-  .suite-name { font-weight: 600; font-size: 15px; }
-  .suite-name .pkg { color: var(--text-muted); font-weight: 400; font-size: 13px; }
-  .suite-meta { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .suite-name { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
+  .suite-name .pkg {
+    color: var(--sub-ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 400;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    margin-left: 6px;
+  }
+  .suite-meta {
+    color: var(--sub-ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+
   .cases { list-style: none; margin: 0; padding: 0; }
   .case {
-    padding: 8px 22px;
+    padding: 9px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    border-bottom: 1px solid var(--surface-2);
+    border-bottom: 1px solid var(--hair);
     font-size: 13px;
   }
   .case:last-child { border-bottom: none; }
-  .case-name { font-family: "SF Mono", Menlo, monospace; }
+  .case-name {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    color: var(--ink);
+  }
   .case-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: var(--ok);
-    background: var(--ok-soft);
+    color: var(--mint-deep);
+    background: var(--mint-bg);
     padding: 2px 10px;
     border-radius: 999px;
-    font-size: 11px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
     font-weight: 600;
+    letter-spacing: 0.10em;
     flex-shrink: 0;
   }
-  .case-time { color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-  .log-section { margin-top: 24px; }
-  .log-title { font-size: 14px; font-weight: 600; margin: 0 0 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .case-time {
+    color: var(--sub-ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .log-section { margin-top: 28px; }
+  .log-title {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: var(--sub-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.20em;
+  }
   pre.log {
-    background: #0b0b14;
-    border: 1px solid var(--outline);
-    border-radius: 12px;
-    padding: 18px 20px;
+    background: var(--card-2);
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+    padding: 22px 24px;
     margin: 0;
     overflow-x: auto;
-    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, "SF Mono", Menlo, monospace;
     font-size: 12.5px;
-    line-height: 1.6;
-    color: #c8c8d8;
+    line-height: 1.65;
+    color: var(--sub-ink);
+    box-shadow: var(--sh-card);
   }
-  pre.log .ok { color: var(--ok); }
-  pre.log .hdr { color: var(--accent); }
-  footer { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 32px; }
-  footer a { color: var(--accent); text-decoration: none; }
+  pre.log .ok  { color: var(--mint-deep); font-weight: 600; }
+  pre.log .hdr { color: var(--lavender); font-weight: 600; }
+
+  footer {
+    text-align: center;
+    color: var(--sub-ink);
+    font-size: 12px;
+    margin-top: 36px;
+  }
+  footer a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--hair-heavy);
+    padding-bottom: 1px;
+  }
+  footer a:hover { border-bottom-color: var(--mint-deep); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>Test Report — DHBW Memory</h1>
-    <div class="subtitle">JUnit 5 · Surefire 3.5.2 · last run 2026-05-19</div>
+    <div class="subtitle">JUnit 5 · Surefire 3.5.2 · last run 2026-05-28</div>
     <div class="stats">
       <div class="stat"><span class="stat-value ok">59</span><span class="stat-label">tests</span></div>
       <div class="stat"><span class="stat-value ok">0</span><span class="stat-label">failures</span></div>
       <div class="stat"><span class="stat-value ok">0</span><span class="stat-label">errors</span></div>
       <div class="stat"><span class="stat-value ok">0</span><span class="stat-label">skipped</span></div>
       <div class="stat"><span class="stat-value">6</span><span class="stat-label">suites</span></div>
-      <div class="stat"><span class="stat-value">60 ms</span><span class="stat-label">total time</span></div>
+      <div class="stat"><span class="stat-value">55 ms</span><span class="stat-label">total time</span></div>
     </div>
   </header>
 
   <section class="suite">
     <div class="suite-head">
       <div class="suite-name">GameServiceTest <span class="pkg">de.dhbw.memory.controller</span></div>
-      <div class="suite-meta">12 tests · 30 ms</div>
+      <div class="suite-meta">12 tests · 29 ms</div>
     </div>
     <ul class="cases">
       <li class="case"><span class="case-name">isWaitingForFlipBackStartsFalse</span><span><span class="case-time">10 ms</span> <span class="case-badge">PASS</span></span></li>
@@ -142,7 +248,7 @@
   <section class="suite">
     <div class="suite-head">
       <div class="suite-name">BoardTest <span class="pkg">de.dhbw.memory.model</span></div>
-      <div class="suite-meta">7 tests · 7 ms</div>
+      <div class="suite-meta">7 tests · 5 ms</div>
     </div>
     <ul class="cases">
       <li class="case"><span class="case-name">eachMotifAppearsTwice</span><span><span class="case-time">1 ms</span> <span class="case-badge">PASS</span></span></li>
@@ -158,7 +264,7 @@
   <section class="suite">
     <div class="suite-head">
       <div class="suite-name">CardTest <span class="pkg">de.dhbw.memory.model</span></div>
-      <div class="suite-meta">7 tests · 3 ms</div>
+      <div class="suite-meta">7 tests · 4 ms</div>
     </div>
     <ul class="cases">
       <li class="case"><span class="case-name">newCardIsNotMatched</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
@@ -174,7 +280,7 @@
   <section class="suite">
     <div class="suite-head">
       <div class="suite-name">GameTest <span class="pkg">de.dhbw.memory.model</span></div>
-      <div class="suite-meta">19 tests · 14 ms</div>
+      <div class="suite-meta">19 tests · 11 ms</div>
     </div>
     <ul class="cases">
       <li class="case"><span class="case-name">isFinishedFalseWhileUnmatchedCardsRemain</span><span><span class="case-time">&lt;1 ms</span> <span class="case-badge">PASS</span></span></li>
@@ -273,17 +379,17 @@
 [INFO]  <span class="hdr">T E S T S</span>
 [INFO] -------------------------------------------------------
 [INFO] Running de.dhbw.memory.controller.GameServiceTest
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in de.dhbw.memory.controller.GameServiceTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in de.dhbw.memory.controller.GameServiceTest
 [INFO] Running de.dhbw.memory.model.CardTest
 [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in de.dhbw.memory.model.CardTest
 [INFO] Running de.dhbw.memory.model.BoardTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in de.dhbw.memory.model.BoardTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in de.dhbw.memory.model.BoardTest
 [INFO] Running de.dhbw.memory.model.GameTest
 [INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in de.dhbw.memory.model.GameTest
 [INFO] Running de.dhbw.memory.model.ThemeTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in de.dhbw.memory.model.ThemeTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.dhbw.memory.model.ThemeTest
 [INFO] Running de.dhbw.memory.model.PlayerTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in de.dhbw.memory.model.PlayerTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.dhbw.memory.model.PlayerTest
 [INFO]
 [INFO] Results:
 [INFO]
@@ -292,8 +398,8 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] <span class="ok">BUILD SUCCESS</span>
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.626 s
-[INFO] Finished at: 2026-05-19T11:32:26+02:00
+[INFO] Total time:  3.749 s
+[INFO] Finished at: 2026-05-28T03:29:15+02:00
 [INFO] ------------------------------------------------------------------------</pre>
   </div>
 

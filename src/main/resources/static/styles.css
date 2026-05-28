@@ -184,39 +184,6 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Soft ambient blobs behind the setup view. Painted on the body via
-   ::before / ::after, fixed so they don't scroll with the content. */
-.app-body::before,
-.app-body::after {
-    content: "";
-    position: fixed;
-    pointer-events: none;
-    border-radius: 50%;
-    filter: blur(20px);
-    z-index: 0;
-}
-.app-body::before {
-    top: -240px;
-    left: 50%;
-    width: 1100px;
-    height: 600px;
-    transform: translateX(-50%);
-    background: radial-gradient(closest-side, var(--blob-mint), transparent 70%);
-}
-.app-body::after {
-    top: 120px;
-    right: -160px;
-    width: 460px;
-    height: 460px;
-    background: radial-gradient(closest-side, var(--blob-lavender), transparent 70%);
-}
-
-/* Lift app content above the ambient blobs. */
-.app-body > * {
-    position: relative;
-    z-index: 1;
-}
-
 /* ── Material Symbols (Google's outlined icon font) ─────────────────────── */
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined';
@@ -823,6 +790,16 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
     box-shadow: var(--sh-card);
 }
 
+/* Light theme: the card face is white and so is the page (paper #FAFAF7),
+   so plain elevation isn't enough to make cards pop. Add a crisp hair
+   ring + a deeper drop-shadow specifically in light mode. */
+:root[theme="light"] .card-wrapper {
+    box-shadow:
+        0 0 0 1px rgba(14, 14, 12, 0.08),
+        0 4px 10px -2px rgba(14, 14, 12, 0.10),
+        0 18px 36px -16px rgba(14, 14, 12, 0.22);
+}
+
 .card-inner {
     position: absolute;
     inset: 0;
@@ -896,18 +873,18 @@ vaadin-dialog-overlay[theme~="dhbw"]::part(content) {
 /* ── Card states ───────────────────────────────────────────────────────── */
 .card-wrapper.state-recently-matched {
     box-shadow:
-        0 0 0 3px var(--mint-deep),
-        0 0 0 8px var(--mint-bg),
-        0 0 28px rgba(63, 191, 127, 0.45),
+        0 0 0 4px #22c55e,
+        0 0 0 8px rgba(34, 197, 94, 0.40),
+        0 0 28px rgba(34, 197, 94, 0.60),
         var(--sh-card);
     cursor: default;
 }
 
 .card-wrapper.state-mismatched {
     box-shadow:
-        0 0 0 3px var(--red-deep),
-        0 0 0 8px var(--red-bg),
-        0 0 26px rgba(201, 69, 60, 0.40),
+        0 0 0 4px #ff5252,
+        0 0 0 8px rgba(255, 82, 82, 0.30),
+        0 0 26px rgba(255, 82, 82, 0.50),
         var(--sh-card);
     cursor: default;
 }

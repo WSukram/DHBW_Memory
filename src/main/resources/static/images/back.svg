@@ -1,10 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="0" fill="#FAFAF7"/>
-  <path d="M14 56 L31 56 L37 42 L48 70 L59 32 L68 56 L79 56"
-        fill="none" stroke="#7BE495" stroke-opacity="0.28"
-        stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M14 56 L31 56 L37 42 L48 70 L59 32 L68 56 L79 56"
+  <rect width="100" height="100" rx="0" fill="#FFFFFF"/>
+  <path d="M14 50 L31 50 L37 36 L48 64 L59 26 L68 50 L79 50"
         fill="none" stroke="#3FBF7F" stroke-width="5.5"
         stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="82" cy="56" r="4.4" fill="#A89BFF"/>
+  <circle cx="82" cy="50" r="4.4" fill="#A89BFF"/>
+  <text x="50" y="80"
+        font-family="Helvetica, Arial, sans-serif"
+        font-size="6.5" font-weight="700" letter-spacing="2.5"
+        fill="#0E0E0C" text-anchor="middle" opacity="0.55">DHBW MEMORY</text>
 </svg>

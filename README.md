@@ -1,11 +1,16 @@
 # DHBW Memory
 
 A Java-based **Memory** card game built with **Spring Boot** and **Vaadin**.
-University exam project for **DHBW Ravensburg**, course *Programmieren Java*.
+University exam project for **DHBW Ravensburg Campus Friedrichshafen**, course *Programmieren Java*.
 
 Runs locally as a single executable fat jar (embedded Tomcat → browser at
 `localhost:8080`) and as a Docker container behind nginx at
 <https://memory.walletpulse.de>.
+
+<p align="center">
+  <img src="docs/screenshots/start.png" alt="DHBW Memory — Game Setup" width="48%" />
+  <img src="docs/screenshots/game.png"  alt="DHBW Memory — 4×4 game in progress" width="48%" />
+</p>
 
 ---
 
@@ -29,7 +34,7 @@ mvn spring-boot:run
 # The "production" profile compiles the Vaadin frontend into the jar,
 # so the resulting artifact runs without npm / Vite installed.
 mvn clean package -P production
-java -jar target/DHBW_Memory-1.0-SNAPSHOT.jar
+java -jar target/DHBW-Memory-Markus-Wenninger.jar
 
 # Generate JavaDoc → target/reports/apidocs/index.html
 mvn javadoc:javadoc
@@ -48,6 +53,19 @@ A multi-stage `Dockerfile` is included (`maven:3.9-eclipse-temurin-21` build →
 docker build -t dhbw-memory .
 docker run --rm -p 8080:8080 dhbw-memory
 ```
+
+---
+
+## Features
+
+- **1 or 2 players** — local hot-seat
+- **4×4 (8 pairs)** or **6×6 (18 pairs)** grids
+- **Three card themes:** Crypto, Languages, Space — each is a set of custom SVGs
+- **Light / Dark / System** color modes — the choice is persisted in `localStorage` and applied before paint, so there is no flash on reload
+- **Full keyboard navigation** — arrow keys to move, Space / Enter to flip
+- **Live game timer** in the status bar and the browser tab title
+- **Per-player stats** (turns, accuracy) and confetti on win
+- Bundled **JavaDoc** at [`/docs/index.html`](http://localhost:8080/docs/index.html) and an HTML **test report** at [`/tests/index.html`](http://localhost:8080/tests/index.html)
 
 ---
 
@@ -86,9 +104,7 @@ src/main/java/de/dhbw/memory/
     └── dialog/                     HelpDialog, QuitConfirmDialog, EndGameDialog
 ```
 
-**UML class diagram:**
-- v2 — color-coded by layer: [`docs/uml/class-diagram-v2.png`](docs/uml/class-diagram-v2.png) (source: [`class-diagram-v2.puml`](docs/uml/class-diagram-v2.puml))
-- v1 — auto-layout reference: [`docs/uml/class-diagram-v1.png`](docs/uml/class-diagram-v1.png) (source: [`class-diagram-v1.puml`](docs/uml/class-diagram-v1.puml))
+**UML class diagram:** [`docs/uml/DHBW_Memory_UML_Diagram_Markus_Wenninger.png`](docs/uml/DHBW_Memory_UML_Diagram_Markus_Wenninger.png) (source: [`.puml`](docs/uml/DHBW_Memory_UML_Diagram_Markus_Wenninger.puml))
 
 ---
 
@@ -134,52 +150,6 @@ The card back is a unified WalletPulse-branded SVG.
 
 ---
 
-## Submission checklist
-
-Run these steps **in order, immediately before sending the submission
-email**. The test report page (`/tests/index.html`) embeds the run date
-and the full Maven console log, so doing it last keeps that date current.
-
-```bash
-# 0. Pin JDK 21 (Vaadin frontend can't parse JDK 25 bytecode)
-export JAVA_HOME=$(/usr/libexec/java_home -v 21)
-
-# 1. Run all tests — must end with "Tests run: 59, Failures: 0"
-./mvnw test
-```
-
-**2. Update the test report page** at
-`src/main/resources/static/tests/index.html`:
-- the subtitle date near the top: `… last run YYYY-MM-DD`
-- the `[INFO] Finished at: …` line at the bottom of the embedded Maven log
-- (any test count / suite time numbers if they drifted)
-
-```bash
-# 3. Regenerate JavaDoc and copy it into the jar's static resources
-rm -rf src/main/resources/static/docs
-mvn javadoc:javadoc
-cp -R target/reports/apidocs/. src/main/resources/static/docs/
-
-# 4. Repack the JavaDoc zip (one of the email attachments)
-rm -f javadoc.zip
-( cd target/reports/apidocs && zip -qr ../../../javadoc.zip . )
-
-# 5. Build the production fat jar — bundles the fresh docs + tests page
-mvn clean package -P production -DskipTests
-
-# 6. Refresh the abgabe/ folder (the three email attachments)
-cp target/DHBW-Memory-Markus-Wenninger.jar abgabe/
-cp javadoc.zip abgabe/
-```
-
-After step 6, `abgabe/` contains exactly the three files to attach:
-
-| File | Purpose |
-|---|---|
-| `DHBW-Memory-Markus-Wenninger.jar` | executable Java application |
-| `class-diagramm-v4.png` | UML class diagram |
-| `javadoc.zip` | packed JavaDoc |
-
----
-
 **Course**: Programmieren – Java · **University**: DHBW Ravensburg Campus Friedrichshafen · **Author**: Markus Wenninger
+
+**License**: [MIT](LICENSE)

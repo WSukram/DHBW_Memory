@@ -22,7 +22,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Create GitHub deployment
-        uses: chrnorm/deployment-action@v2.0.7
+        uses: chrnorm/deployment-action@55729fcebec3d284f60f5bcabbd8376437d696b1 # v2.0.7
         id: deployment
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
             ghcr.io/${{ env.OWNER }}/dhbw-memory:${{ github.event.workflow_run.head_sha }}
 
       - name: Copy compose file to server
-        uses: appleboy/scp-action@v0.1.7 # TODO: pin to SHA — could not verify
+        uses: appleboy/scp-action@917f8b81dfc1ccd331fef9e2d61bdc6c8be94634 # v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
@@ -59,7 +59,7 @@ jobs:
           target: /opt/dhbw-memory
 
       - name: Deploy to server via SSH
-        uses: appleboy/ssh-action@v1.1.0 # TODO: pin to SHA — could not verify
+        uses: appleboy/ssh-action@25ce8cbbcb08177468c7ff7ec5cbfa236f9341e1 # v1.1.0
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
@@ -71,7 +71,7 @@ jobs:
 
       - name: Update deployment status (success)
         if: success()
-        uses: chrnorm/deployment-status@v2.0.3 # TODO: pin to SHA — could not verify
+        uses: chrnorm/deployment-status@9a72af4586197112e0491ea843682b5dc280d806 # v2.0.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
@@ -80,7 +80,7 @@ jobs:
 
       - name: Update deployment status (failure)
         if: failure()
-        uses: chrnorm/deployment-status@v2.0.3 # TODO: pin to SHA — could not verify
+        uses: chrnorm/deployment-status@9a72af4586197112e0491ea843682b5dc280d806 # v2.0.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}

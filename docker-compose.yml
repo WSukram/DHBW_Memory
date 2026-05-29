@@ -1,6 +1,7 @@
 services:
   memory:
-    image: ghcr.io/wsukram/dhbw-memory:latest
+    image: ghcr.io/wsukram/dhbw-memory:latest  # swap :latest for a git-SHA tag to enable rollback
+    container_name: dhbw-memory
     restart: unless-stopped
     ports:
       - "127.0.0.1:8081:8080"

@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"de.dhbw.memory"},{"l":"de.dhbw.memory.controller"},{"l":"de.dhbw.memory.model"},{"l":"de.dhbw.memory.view"},{"l":"de.dhbw.memory.view.component"},{"l":"de.dhbw.memory.view.dialog"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"de.dhbw.memory"},{"l":"de.dhbw.memory.controller"},{"l":"de.dhbw.memory.model"},{"l":"de.dhbw.memory.view"},{"l":"de.dhbw.memory.view.component"},{"l":"de.dhbw.memory.view.dialog"}];updateSearchResults();

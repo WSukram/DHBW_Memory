@@ -98,6 +98,7 @@ package "view.component" as PComp <<Frame>> {
     + setRenderer(renderer)
     + setValue(value : T)
     + getValue() : T
+    + setAriaLabel(label : String)
     + addValueChangeListener(listener)
   }
   class MemoryCard <<component>> {

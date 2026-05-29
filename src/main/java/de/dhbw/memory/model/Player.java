@@ -20,12 +20,20 @@ public class Player {
         this.name = name;
     }
 
-    /** Returns the player's display name. */
+    /**
+     * Returns the player's display name.
+     *
+     * @return the name provided at construction
+     */
     public String getName() {
         return name;
     }
 
-    /** Returns the number of pairs this player has matched. */
+    /**
+     * Returns the number of pairs this player has matched.
+     *
+     * @return current score (number of matched pairs)
+     */
     public int getScore() {
         return score;
     }
@@ -40,7 +48,11 @@ public class Player {
         turns++;
     }
 
-    /** Returns how many complete turns this player has taken. */
+    /**
+     * Returns how many complete turns this player has taken.
+     *
+     * @return total number of completed turns
+     */
     public int getTurns() {
         return turns;
     }

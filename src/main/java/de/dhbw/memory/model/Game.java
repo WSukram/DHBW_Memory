@@ -25,6 +25,8 @@ public class Game {
     private final List<Player> players;
     private final Board board;
     private int activePlayerIdx;
+    // Written by the UI thread (flip) and reset by the scheduler thread (resetMismatch);
+    // synchronization on Game.this keeps both threads consistent.
     private Card firstFlipped;
     private Card secondFlipped;
     private int totalTurns;
@@ -49,10 +51,11 @@ public class Game {
     /**
      * Flips the card at {@code position} and returns what happened.
      *
-     * @param position 0-based grid position of the card the player clicked
+     * @param position 0-based grid position of the card the player clicked;
+     *                 must be within {@code [0, board.size()-1]}
      * @return the result of this flip — see {@link FlipResult}
      */
-    public FlipResult flip(int position) {
+    public synchronized FlipResult flip(int position) {
         Card card = board.getCardAt(position);
 
         if (card.isMatched() || card.isFaceUp()) {
@@ -82,7 +85,7 @@ public class Game {
      * Marks both cards of a matching pair and awards the active player a point.
      * Active player keeps the turn (bonus-turn rule).
      */
-    private void resolveMatch() {
+    private synchronized void resolveMatch() {
         firstFlipped.match();
         secondFlipped.match();
         players.get(activePlayerIdx).addPoint();
@@ -94,7 +97,7 @@ public class Game {
      * Hides both mismatched cards and switches to the next player.
      * Called by the controller after the flip-back delay (~1 500 ms).
      */
-    public void resetMismatch() {
+    public synchronized void resetMismatch() {
         if (firstFlipped != null) {
             firstFlipped.flip();
         }

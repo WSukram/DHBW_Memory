@@ -1,8 +1,9 @@
 /*
  * DHBW Memory — client-side helpers.
  *
- * Loaded once by GameView (Page.addJavaScript("/game.js")) and exposed as
- * window.dhbwMemory.{startTimer, stopTimer, initKeyboard}. The Java side
+ * Loaded by both StartView and GameView (Page.addJavaScript("/game.js")) and exposed as
+ * window.dhbwMemory.{startTimer, stopTimer, initKeyboard, initSegmented, setTheme,
+ * getThemePref, showConfetti}. The Java side
  * calls these via Element.executeJs() so this file is the single source of
  * truth for the browser-facing logic — no inline JS strings in Java.
  */
@@ -80,10 +81,21 @@ window.dhbwMemory = (function () {
             if (isFlip && isControl) return;
 
             let moved = false;
-            if      (e.key === 'ArrowRight') { focus = (focus + 1) % total;                moved = true; }
-            else if (e.key === 'ArrowLeft')  { focus = (focus - 1 + total) % total;        moved = true; }
-            else if (e.key === 'ArrowDown')  { focus = Math.min(focus + size, total - 1);  moved = true; }
-            else if (e.key === 'ArrowUp')    { focus = Math.max(focus - size, 0);          moved = true; }
+            if (e.key === 'ArrowRight') {
+                const rowEnd = Math.floor(focus / size) * size + size - 1;
+                focus = Math.min(focus + 1, rowEnd);
+                moved = true;
+            } else if (e.key === 'ArrowLeft') {
+                const rowStart = Math.floor(focus / size) * size;
+                focus = Math.max(focus - 1, rowStart);
+                moved = true;
+            } else if (e.key === 'ArrowDown') {
+                focus = Math.min(focus + size, total - 1);
+                moved = true;
+            } else if (e.key === 'ArrowUp') {
+                focus = Math.max(focus - size, 0);
+                moved = true;
+            }
             else if (isFlip) {
                 document.body.classList.add('keyboard-mode');
                 server.handleKeyboardFlip(focus);

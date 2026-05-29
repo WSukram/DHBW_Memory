@@ -44,6 +44,13 @@ public class MemoryApplication implements AppShellConfigurator {
         SpringApplication.run(MemoryApplication.class, args);
     }
 
+    /**
+     * Configures the HTML page head for every Vaadin response: loads fonts, sets the favicon,
+     * and injects the inline theme-bootstrap script that applies the stored colour preference
+     * before first paint to prevent a flash of the wrong theme.
+     *
+     * @param settings Vaadin's app-shell settings object used to add links, favicons, and inline content
+     */
     @Override
     public void configurePage(AppShellSettings settings) {
         // Soft-stack typography: Geist for UI/body + JetBrains Mono for tabular

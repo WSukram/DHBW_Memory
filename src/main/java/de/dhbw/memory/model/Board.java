@@ -52,6 +52,8 @@ public class Board {
     /**
      * Returns an unmodifiable view of the card list. The index in this list is the grid position
      * that the view renders.
+     *
+     * @return unmodifiable list of all cards in their current order
      */
     public List<Card> getCards() {
         return Collections.unmodifiableList(cards);
@@ -61,13 +63,18 @@ public class Board {
      * Returns the card at grid position {@code position}.
      *
      * @param position 0-based index into the shuffled card list
+     * @return the card at the given position
      * @throws IndexOutOfBoundsException if position is out of range
      */
     public Card getCardAt(int position) {
         return cards.get(position);
     }
 
-    /** Returns the grid edge length (4 or 6). */
+    /**
+     * Returns the grid edge length (4 or 6).
+     *
+     * @return the grid edge length used to construct this board
+     */
     public int getSize() {
         return size;
     }

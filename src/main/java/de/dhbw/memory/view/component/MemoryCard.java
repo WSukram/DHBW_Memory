@@ -45,6 +45,9 @@ public class MemoryCard extends Div {
 
         addClassName("card-wrapper");
         getElement().setAttribute("role", "button");
+        // tabindex="-1": the card participates in programmatic focus (card.focus())
+        // but is excluded from the tab order — game.js drives focus via arrow keys.
+        getElement().setAttribute("tabindex", "-1");
 
         inner = new Div();
         inner.addClassName("card-inner");
@@ -133,7 +136,7 @@ public class MemoryCard extends Div {
     }
 
     private void buildFront(Div face, String motif) {
-        Image wp = new Image("/images/wp-icon.svg", "WalletPulse");
+        Image wp = new Image("/images/wp-icon.svg", "");
         wp.addClassName("card-face-wp");
 
         Image motifImg = new Image("/images/" + theme.getFolder() + "/" + motif + ".svg", motif);

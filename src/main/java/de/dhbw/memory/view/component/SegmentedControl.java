@@ -82,6 +82,16 @@ public class SegmentedControl<T> extends Div {
         return value;
     }
 
+    /**
+     * Sets an accessible name on the {@code radiogroup} container so screen readers
+     * announce what the group controls (e.g. "Players", "Grid size").
+     *
+     * @param label human-readable label for the group
+     */
+    public void setAriaLabel(String label) {
+        getElement().setAttribute("aria-label", label);
+    }
+
     /** Subscribes to user-initiated selection changes. */
     public void addValueChangeListener(SerializableConsumer<T> listener) {
         listeners.add(listener);

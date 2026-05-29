@@ -7,6 +7,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Theme}: folder names, motif counts, distinctness, and validation.
+ *
+ * @author Markus Wenninger
+ */
 class ThemeTest {
 
     @Test
@@ -41,6 +46,12 @@ class ThemeTest {
     void cryptoHasEighteenDistinctMotifs() {
         List<String> motifs = Theme.CRYPTO.getMotifsFor(6);
         assertEquals(18, new HashSet<>(motifs).size(), "all 18 crypto motifs must be unique");
+    }
+
+    @Test
+    void spaceHasEighteenDistinctMotifs() {
+        List<String> motifs = Theme.SPACE.getMotifsFor(6);
+        assertEquals(18, new HashSet<>(motifs).size(), "all 18 space motifs must be unique");
     }
 
     @Test

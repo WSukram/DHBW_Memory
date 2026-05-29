@@ -6,6 +6,8 @@ import java.util.List;
  * Shared test helpers for locating card positions on a shuffled board.
  * Keeps {@link GameTest} and {@link de.dhbw.memory.controller.GameServiceTest}
  * independent of the actual shuffle order.
+ *
+ * @author Markus Wenninger
  */
 public final class TestBoards {
 

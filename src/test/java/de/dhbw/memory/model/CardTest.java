@@ -4,6 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Card}: initial state, flip behaviour, and match marking.
+ *
+ * @author Markus Wenninger
+ */
 class CardTest {
 
     @Test

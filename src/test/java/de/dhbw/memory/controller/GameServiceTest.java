@@ -119,6 +119,17 @@ class GameServiceTest {
         service.shutdown();
     }
 
+    @Test
+    void getThemeReturnsThemePassedToStartGame() {
+        service.startGame(List.of("Alice"), 4, Theme.CRYPTO);
+        assertEquals(Theme.CRYPTO, service.getTheme());
+    }
+
+    @Test
+    void getThemeNullBeforeStart() {
+        assertNull(service.getTheme());
+    }
+
     /**
      * Calls {@code startGame} and locates a matching pair plus a disjoint mismatching
      * pair so the tests are independent of the random shuffle.

@@ -46,8 +46,8 @@ mvn test
 
 ### Docker
 
-A multi-stage `Dockerfile` is included (`maven:3.9-eclipse-temurin-21` build →
-`eclipse-temurin-21-jre-alpine` runtime):
+A multi-stage `Dockerfile` is included (`maven:3.9.9-eclipse-temurin-21` build →
+`eclipse-temurin:21.0.7_6-jre-alpine` runtime):
 
 ```bash
 docker build -t dhbw-memory .
@@ -132,6 +132,8 @@ console output) is bundled into the fat jar and served at
 [`/tests/index.html`](http://localhost:8080/tests/index.html) once the
 app is running. JavaDoc is bundled the same way at
 [`/docs/index.html`](http://localhost:8080/docs/index.html).
+Note: the date and Maven log timestamp inside `static/tests/index.html` are
+hand-edited before each submission build — they are not updated automatically.
 
 ---
 

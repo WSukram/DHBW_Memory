@@ -13,12 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Spring service that orchestrates one Memory game per browser tab.
  *
- * <p>{@code @UIScoped} is a Vaadin scope that ties the bean lifetime to a single
+ * <p>{@code @UIScope} is a Vaadin scope that ties the bean lifetime to a single
  * {@link UI} instance (= one browser tab). Each tab therefore gets its own game
  * state, independent of other open tabs.</p>
  *
@@ -46,7 +47,11 @@ public class GameService {
      * in flight at a time (cards are locked while waiting).
      */
     private final ScheduledExecutorService scheduler =
-            Executors.newSingleThreadScheduledExecutor();
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r, "memory-flipback");
+                t.setDaemon(true);
+                return t;
+            });
 
     private Game game;
     private Theme theme;
@@ -69,9 +74,7 @@ public class GameService {
         this.theme = theme;
         this.startTimeMs = System.currentTimeMillis();
         Board board = new Board(gridSize, theme);
-        // System.currentTimeMillis() gives a different seed each game, so cards
-        // are shuffled differently every time.
-        board.shuffle(System.currentTimeMillis());
+        board.shuffle(ThreadLocalRandom.current().nextLong());
 
         List<Player> players = playerNames.stream()
                 .map(Player::new)
@@ -119,10 +122,14 @@ public class GameService {
                 if (pending == game) {
                     waitingForFlipBack = false;
                 }
-                // UI.access() acquires the Vaadin session lock and pushes the
-                // runnable onto the UI thread — safe to call from any thread.
-                // afterReset::run adapts Runnable to Vaadin's Command functional interface.
-                ui.access(afterReset::run);
+                if (ui != null) {
+                    // UI.access() acquires the Vaadin session lock and pushes the
+                    // runnable onto the UI thread — safe to call from any thread.
+                    // afterReset::run adapts Runnable to Vaadin's Command functional interface.
+                    ui.access(afterReset::run);
+                }
+                // ui == null only in headless unit tests; afterReset is skipped because
+                // there is no UI to update.
             }, FLIP_BACK_DELAY_MS, TimeUnit.MILLISECONDS);
         }
 

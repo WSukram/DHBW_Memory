@@ -8,6 +8,11 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Board}: card count, shuffle determinism, and validation.
+ *
+ * @author Markus Wenninger
+ */
 class BoardTest {
 
     @Test

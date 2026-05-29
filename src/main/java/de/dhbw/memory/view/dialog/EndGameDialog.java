@@ -86,8 +86,8 @@ public class EndGameDialog extends Dialog {
     }
 
     private static Div statsRow(Player player, Player winner, boolean multi) {
-        int accuracy = player.getTurns() > 0
-                ? (player.getScore() * 100 / player.getTurns())
+        long accuracy = player.getTurns() > 0
+                ? Math.round(player.getScore() * 100.0 / player.getTurns())
                 : 0;
 
         Span name = new Span(player.getName());

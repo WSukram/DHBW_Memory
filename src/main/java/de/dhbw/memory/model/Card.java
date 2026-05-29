@@ -25,22 +25,38 @@ public class Card {
         this.matched = false;
     }
 
-    /** Returns the unique card id. */
+    /**
+     * Returns the unique card id.
+     *
+     * @return 0-based index assigned at board creation
+     */
     public int getId() {
         return id;
     }
 
-    /** Returns the motif name used to detect pairs. */
+    /**
+     * Returns the motif name used to detect pairs.
+     *
+     * @return motif id shared with exactly one other card on the board
+     */
     public String getMotif() {
         return motif;
     }
 
-    /** Returns true when the card is showing its face. */
+    /**
+     * Returns true when the card is showing its face.
+     *
+     * @return {@code true} if the card is currently face-up
+     */
     public boolean isFaceUp() {
         return faceUp;
     }
 
-    /** Returns true when this card has been permanently matched. */
+    /**
+     * Returns true when this card has been permanently matched.
+     *
+     * @return {@code true} if the card has been matched and stays face-up
+     */
     public boolean isMatched() {
         return matched;
     }

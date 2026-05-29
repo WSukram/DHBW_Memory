@@ -75,6 +75,7 @@ public class StartView extends VerticalLayout {
         playerCount.setItems(1, 2);
         playerCount.setRenderer(n -> new Span(n + (n == 1 ? " Player" : " Players")));
         playerCount.setValue(1);
+        playerCount.setAriaLabel("Players");
 
         // --- Colour theme (icon-only segmented: ☀ / 🌙 / 🖥) ---
         // Initial server-side value is "system"; a small executeJs call below
@@ -84,6 +85,7 @@ public class StartView extends VerticalLayout {
         colorTheme.setItems("light", "dark", "system");
         colorTheme.setRenderer(StartView::themeIcon);
         colorTheme.setValue("system");
+        colorTheme.setAriaLabel("Appearance");
         colorTheme.addValueChangeListener(StartView::applyTheme);
 
         Div playersField = fieldGroup("Players", playerCount);
@@ -115,7 +117,7 @@ public class StartView extends VerticalLayout {
         name2.setWidthFull();
 
         playerCount.addValueChangeListener(v ->
-                name2Field.getStyle().set("visibility", v == 2 ? "visible" : "hidden"));
+                name2Field.getStyle().set("visibility", v != null && v == 2 ? "visible" : "hidden"));
 
         HorizontalLayout names = new HorizontalLayout(name1Field, name2Field);
         names.setWidthFull();
@@ -127,10 +129,12 @@ public class StartView extends VerticalLayout {
         gridSize.setItems(4, 6);
         gridSize.setRenderer(n -> new Span(n + " × " + n));
         gridSize.setValue(4);
+        gridSize.setAriaLabel("Grid size");
 
         // --- Theme picker rendered as the larger ".chips" variant: bigger
         //     card-style options with the motif preview icon + label. ---
         SegmentedControl<Theme> theme = new SegmentedControl<Theme>().withVariant("chips");
+        theme.setAriaLabel("Theme");
         theme.setItems(Theme.values());
         theme.setRenderer(t -> {
             String motif = t.getMotifsFor(4).get(0);

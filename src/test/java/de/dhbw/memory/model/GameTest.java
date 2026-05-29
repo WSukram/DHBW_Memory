@@ -7,6 +7,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Game}: flip outcomes, score tracking, player switching, and end-game detection.
+ *
+ * @author Markus Wenninger
+ */
 class GameTest {
 
     private Board board;
@@ -169,5 +174,12 @@ class GameTest {
     void flipAlreadyFaceUpCardReturnsInvalid() {
         game.flip(mismatch.a());
         assertEquals(FlipResult.INVALID, game.flip(mismatch.a()));
+    }
+
+    @Test
+    void emptyPlayerListThrows() {
+        Board emptyBoard = new Board(4, Theme.CRYPTO);
+        emptyBoard.shuffle(0L);
+        assertThrows(IllegalArgumentException.class, () -> new Game(List.of(), emptyBoard));
     }
 }

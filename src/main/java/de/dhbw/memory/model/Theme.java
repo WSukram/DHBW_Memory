@@ -45,6 +45,8 @@ public enum Theme {
      * Returns the static-resource sub-folder name for this theme (e.g. {@code "crypto"}).
      * Images live at {@code src/main/resources/static/images/<folder>/<motif>.svg}
      * (served at {@code /images/<folder>/<motif>.svg}).
+     *
+     * @return the folder name used to construct image URLs
      */
     public String getFolder() {
         return folder;

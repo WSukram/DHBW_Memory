@@ -4,6 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Player}: name, score, and turn counter behaviour.
+ *
+ * @author Markus Wenninger
+ */
 class PlayerTest {
 
     @Test

@@ -67,6 +67,22 @@ window.dhbwMemory = (function () {
         };
         document.addEventListener('mousedown', window._mouseListener);
 
+        function isMatched(idx) {
+            const cards = document.querySelectorAll('.card-wrapper');
+            return cards[idx] && cards[idx].hasAttribute('data-matched');
+        }
+
+        // Steps from `from` toward `to` (exclusive), skipping matched cards.
+        // Returns the first unmatched index found, or `from` if none exists.
+        function skipMatched(from, to, step) {
+            let next = from + step;
+            while (step > 0 ? next <= to : next >= to) {
+                if (!isMatched(next)) return next;
+                next += step;
+            }
+            return from;
+        }
+
         window._keyListener = function (e) {
             if (document.querySelector('vaadin-dialog-overlay')) return;
 
@@ -83,17 +99,17 @@ window.dhbwMemory = (function () {
             let moved = false;
             if (e.key === 'ArrowRight') {
                 const rowEnd = Math.floor(focus / size) * size + size - 1;
-                focus = Math.min(focus + 1, rowEnd);
+                focus = skipMatched(focus, rowEnd, 1);
                 moved = true;
             } else if (e.key === 'ArrowLeft') {
                 const rowStart = Math.floor(focus / size) * size;
-                focus = Math.max(focus - 1, rowStart);
+                focus = skipMatched(focus, rowStart, -1);
                 moved = true;
             } else if (e.key === 'ArrowDown') {
-                focus = Math.min(focus + size, total - 1);
+                focus = skipMatched(focus, total - 1, size);
                 moved = true;
             } else if (e.key === 'ArrowUp') {
-                focus = Math.max(focus - size, 0);
+                focus = skipMatched(focus, 0, -size);
                 moved = true;
             }
             else if (isFlip) {

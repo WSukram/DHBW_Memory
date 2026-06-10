@@ -119,6 +119,12 @@ public class MemoryCard extends Div {
             addClassName("card-face-down");
         }
 
+        if (card.isMatched()) {
+            getElement().setAttribute("data-matched", "true");
+        } else {
+            getElement().removeAttribute("data-matched");
+        }
+
         if (keyboardFocused && !card.isMatched()) {
             addClassName("keyboard-focused");
         } else {
